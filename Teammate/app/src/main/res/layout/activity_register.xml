@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#090936"
+    tools:context=".RegisterActivity">
+
+    <RelativeLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <RelativeLayout
+            android:id="@+id/layoutLogoR"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp">
+
+            <ImageView
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_centerInParent="true"
+                android:src="@drawable/logo_notext" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutInputR"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:layout_below="@+id/layoutLogoR">
+
+
+            <LinearLayout
+                android:id="@+id/layoutEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true">
+
+                <EditText
+                    android:id="@+id/txtEmailR"
+                    android:layout_width="250dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edit_text"
+                    android:hint="Email"
+                    android:singleLine="true">
+
+                </EditText>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/layoutEmail"
+                android:layout_marginTop="10dp"
+                android:layout_centerHorizontal="true">
+
+                <EditText
+                    android:id="@+id/txtPasswordR"
+                    android:layout_width="250dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edit_text"
+                    android:hint="Password"
+                    android:inputType="textPassword"
+                    android:singleLine="true">
+
+                </EditText>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/layoutConfirmPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_below="@id/layoutPassword"
+                android:layout_centerHorizontal="true">
+
+                <EditText
+                    android:id="@+id/txtConfirmPasswordR"
+                    android:layout_width="250dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edit_text"
+                    android:hint="Confirm Password"
+                    android:inputType="textPassword"
+                    android:singleLine="true">
+
+                </EditText>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutButtonR"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_below="@id/layoutInputR">
+
+            <Button
+                android:id="@+id/btnRegisterR"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/btn_round"
+                android:textColor="#FFFFFF"
+                android:textSize="20dp"
+                android:text="Next"/>
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+
+</RelativeLayout>
