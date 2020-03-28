@@ -22,4 +22,6 @@
         android:fitsSystemWindows="true"
         app:menu="@menu/activity_index_drawer" />
 
+
+
 </androidx.drawerlayout.widget.DrawerLayout>
