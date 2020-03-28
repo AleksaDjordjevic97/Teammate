@@ -72,12 +72,7 @@ public class Register2Activity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if(mAuth.getCurrentUser() != null)
-                {
                     saveUserDetails();
-                }
-                else
-                    Toast.makeText(Register2Activity.this,"There was an error. Try again later.",Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -100,15 +95,13 @@ public class Register2Activity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode,Intent data)
     {
         super.onActivityResult(requestCode,resultCode,data);
-
-
+        
         if(requestCode==CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
         {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
 
             if(resultCode == RESULT_OK)
             {
-
                 mDialog = new ProgressDialog(Register2Activity.this);
                 mDialog.setTitle("Profile image");
                 mDialog.setMessage("Please wait while the image is uploaded...");
