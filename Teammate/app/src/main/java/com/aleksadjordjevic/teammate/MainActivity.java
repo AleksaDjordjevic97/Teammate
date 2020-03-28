@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity
 
                 Intent nextActivity;
                 if(mAuth.getCurrentUser() != null)
-                    nextActivity = new Intent(getApplicationContext(), MapActivity.class);
+                    nextActivity = new Intent(getApplicationContext(), IndexActivity.class);
                 else
                     nextActivity = new Intent(getApplicationContext(), Main2Activity.class);
 

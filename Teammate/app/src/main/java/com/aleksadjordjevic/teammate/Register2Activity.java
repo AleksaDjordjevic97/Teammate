@@ -231,7 +231,7 @@ public class Register2Activity extends AppCompatActivity
 
     public void sendToMap()
     {
-        Intent mapIntent = new Intent(getApplicationContext(), MapActivity.class);
+        Intent mapIntent = new Intent(getApplicationContext(), IndexActivity.class);
         mapIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(mapIntent);
         finish();

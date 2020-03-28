@@ -3,6 +3,7 @@ package com.aleksadjordjevic.teammate;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -130,7 +131,7 @@ public class LoginActivity extends AppCompatActivity
 
     public void sendToMap()
     {
-        Intent mapIntent = new Intent(getApplicationContext(), MapActivity.class);
+        Intent mapIntent = new Intent(getApplicationContext(), IndexActivity.class);
         mapIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(mapIntent);
         finish();

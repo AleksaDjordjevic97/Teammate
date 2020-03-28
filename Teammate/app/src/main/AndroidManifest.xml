@@ -16,7 +16,11 @@
         android:roundIcon="@mipmap/launcher_icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ResetPasswordActivity"></activity>
+        <activity android:name=".RangActivity"></activity>
+        <activity
+            android:name=".IndexActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ResetPasswordActivity" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:screenOrientation="portrait"
@@ -24,7 +28,9 @@
         <activity android:name=".Register2Activity" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".LoginActivity" />
-        <activity android:name=".MapActivity" />
+        <activity
+            android:name=".MapActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
         <activity android:name=".Main2Activity" />
         <activity android:name=".MainActivity">
             <intent-filter>
