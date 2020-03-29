@@ -202,4 +202,13 @@ public class ProfileActivity extends AppCompatActivity
             }
         });
     }
+
+    @Override
+    public void onBackPressed()
+    {
+        Intent exit = new Intent(getApplicationContext(), IndexActivity.class);
+        exit.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(exit);
+        finish();
+    }
 }
