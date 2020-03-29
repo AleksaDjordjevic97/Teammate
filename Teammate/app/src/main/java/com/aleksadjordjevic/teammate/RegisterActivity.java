@@ -14,21 +14,27 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity
 {
-    EditText txtEmail,txtPassword, txtPassword2;
+    EditText txtEmail,txtPassword, txtPassword2, txtPhone;
     Button btnRegister;
     ProgressDialog mDialog;
     FirebaseAuth mAuth;
     FirebaseUser user;
     String userID;
+    FirebaseFirestore mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -40,8 +46,10 @@ public class RegisterActivity extends AppCompatActivity
         txtEmail = findViewById(R.id.txtEmailR);
         txtPassword = findViewById(R.id.txtPasswordR);
         txtPassword2 = findViewById(R.id.txtConfirmPasswordR);
+        txtPhone = findViewById(R.id.txtPhoneR);
         btnRegister = findViewById(R.id.btnRegisterR);
         mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseFirestore.getInstance();
 
         btnRegister.setOnClickListener(new View.OnClickListener()
         {
@@ -62,8 +70,9 @@ public class RegisterActivity extends AppCompatActivity
         final String email = txtEmail.getText().toString().trim();
         final String password = txtPassword.getText().toString().trim();
         final String password2 = txtPassword2.getText().toString().trim();
+        final String phone = txtPhone.getText().toString().trim();
 
-        if(checkInputError(email,password,password2))
+        if(checkInputError(email,password,password2,phone))
         {
             mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>()
             {
@@ -83,7 +92,9 @@ public class RegisterActivity extends AppCompatActivity
                             {
                                 if(task.isSuccessful())
                                 {
-                                    sendToRegister2();
+                                    user = mAuth.getCurrentUser();
+                                    userID = user.getUid();
+                                    fillDefault();
                                 }
                                 else
                                     Toast.makeText(getApplicationContext(), "There was an error logging in.", Toast.LENGTH_SHORT).show();
@@ -105,7 +116,7 @@ public class RegisterActivity extends AppCompatActivity
 
     }
 
-    public boolean checkInputError(String email,String password,String password2)
+    public boolean checkInputError(String email,String password,String password2, String phone)
     {
         if(email.isEmpty())
         {
@@ -149,7 +160,38 @@ public class RegisterActivity extends AppCompatActivity
             return false;
         }
 
+        if(phone.isEmpty())
+        {
+            txtPhone.setError("Please enter your phone number.");
+            txtPhone.requestFocus();
+            return false;
+        }
+
+        if(!phone.startsWith("+"))
+        {
+            txtPhone.setError("Please enter your area code (+...).");
+            txtPhone.requestFocus();
+            return false;
+        }
+
         return true;
+    }
+
+    protected void fillDefault()
+    {
+        Map<String,Object> userMap = new HashMap<>();
+        userMap.put("username","user");
+        userMap.put("numOfPosts",0);
+        userMap.put("email",user.getEmail());
+        userMap.put("phone",txtPhone.getText().toString().trim());
+        mDatabase.collection("users").document(userID).set(userMap).addOnCompleteListener(new OnCompleteListener<Void>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<Void> task)
+            {
+                sendToRegister2();
+            }
+        });
     }
 
     public void sendToRegister2()

@@ -74,7 +74,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         user = mAuth.getCurrentUser();
         userID = user.getUid();
         mDatabase = FirebaseFirestore.getInstance();
-        DocumentReference profileRef = mDatabase.collection("users").document(userID);
+
 
         navigationView=findViewById(R.id.nav_view);
         mDrawerLayout = findViewById(R.id.drawer_layout);
@@ -86,21 +86,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         navUsername = navView.findViewById(R.id.nav_Username);
 
 
-        profileRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>()
-        {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot)
-            {
-                User usr = documentSnapshot.toObject(User.class);
-
-                navUsername.setText(usr.getUsername());
-                Glide.with(getApplicationContext())
-                        .load(usr.getProfile_image())
-                        .placeholder(R.drawable.ic_launcher_background)
-                        .into(navImage);
-
-            }
-        });
+        setUserDetails();
 
         navButton.setOnClickListener(new View.OnClickListener()
         {
@@ -108,6 +94,16 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
             public void onClick(View v)
             {
                 mDrawerLayout.openDrawer(Gravity.LEFT);
+            }
+        });
+
+        navImage.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent profileIntent = new Intent(getApplicationContext(),ProfileActivity.class);
+                startActivity(profileIntent);
             }
         });
 
@@ -126,6 +122,35 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+    }
+
+    protected void setUserDetails()
+    {
+        DocumentReference profileRef = mDatabase.collection("users").document(userID);
+
+        profileRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>()
+        {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot)
+            {
+                User usr = documentSnapshot.toObject(User.class);
+
+                navUsername.setText(usr.getUsername());
+                Glide.with(getApplicationContext())
+                        .load(usr.getProfile_image())
+                        .placeholder(R.drawable.user)
+                        .into(navImage);
+
+            }
+        });
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+        setUserDetails();
     }
 
     @Override

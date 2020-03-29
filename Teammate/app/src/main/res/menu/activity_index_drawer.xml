@@ -6,9 +6,15 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_topContributors"
-            android:icon="@drawable/reward"
-            android:title="Top Contributors" />
+        android:id="@+id/nav_topContributors"
+        android:icon="@drawable/reward"
+        android:title="Top Contributors" />
+
+        <item
+            android:id="@+id/nav_Search"
+            android:icon="@drawable/search"
+            android:title="Search" />
+
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/logout"

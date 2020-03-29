@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#090936"
+    tools:context=".ProfileActivity">
+    
+    
+    <RelativeLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        
+        
+        <RelativeLayout
+            android:id="@+id/layoutBackP"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            
+            <ImageButton
+                android:id="@+id/btnBackP"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/back"
+                android:background="@android:color/transparent"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutImageP"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutBackP">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="30dp"
+                android:paddingLeft="15dp">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/imgProfileP"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:layout_centerHorizontal="true"
+
+                    android:src="@drawable/user"
+                    />
+
+                <TextView
+                    android:id="@+id/txtUsernameP"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Username"
+                    android:textColor="#FFFFFF"
+                    android:padding="10dp"
+                    android:background="@drawable/btn_round"
+                    android:textSize="30dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="10dp"/>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutInfoP"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutImageP"
+            android:layout_marginTop="60dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_centerHorizontal="true">
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/email"
+                        android:layout_marginRight="10dp"/>
+
+                    <TextView
+                        android:id="@+id/txtEmailP"
+                        android:layout_width="250dp"
+                        android:layout_height="50dp"
+                        android:background="@drawable/edit_text"
+                        android:singleLine="true"
+                        android:layout_marginBottom="35dp"
+                        android:textSize="15dp"
+                        android:textColor="#000000"
+                        android:textAlignment="center"
+                        android:padding="10dp"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/phone"
+                        android:layout_marginRight="10dp"/>
+
+                    <TextView
+                        android:id="@+id/txtPhoneP"
+                        android:layout_width="250dp"
+                        android:layout_height="50dp"
+                        android:background="@drawable/edit_text"
+                        android:singleLine="true"
+                        android:layout_marginBottom="35dp"
+                        android:textSize="15dp"
+                        android:textColor="#000000"
+                        android:textAlignment="center"
+                        android:padding="10dp"/>
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/posts"
+                        android:layout_marginRight="10dp"/>
+
+                    <TextView
+                        android:id="@+id/txtNumOfPostsP"
+                        android:layout_width="250dp"
+                        android:layout_height="50dp"
+                        android:background="@drawable/edit_text"
+                        android:singleLine="true"
+                        android:layout_marginBottom="35dp"
+                        android:textSize="15dp"
+                        android:textColor="#000000"
+                        android:textAlignment="center"
+                        android:padding="10dp"/>
+
+                </LinearLayout>
+
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/friends"
+                        android:layout_marginRight="10dp"/>
+
+                    <Button
+                        android:id="@+id/btnFriendsP"
+                        android:layout_width="250dp"
+                        android:layout_height="50dp"
+                        android:background="@drawable/btn_round"
+                        android:text="View Friends"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20dp"
+                        android:layout_marginBottom="20dp"/>
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+
+        </RelativeLayout>
+        
+        
+        
+        
+        
+    </RelativeLayout>
+
+</RelativeLayout>

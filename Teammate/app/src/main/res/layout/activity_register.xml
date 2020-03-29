@@ -97,6 +97,27 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/layoutPhoneR"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_below="@id/layoutConfirmPassword"
+                android:layout_centerHorizontal="true">
+
+                <EditText
+                    android:id="@+id/txtPhoneR"
+                    android:layout_width="250dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edit_text"
+                    android:hint="Phone number"
+                    android:inputType="phone"
+                    android:singleLine="true">
+
+                </EditText>
+
+            </LinearLayout>
+
         </RelativeLayout>
 
         <RelativeLayout
