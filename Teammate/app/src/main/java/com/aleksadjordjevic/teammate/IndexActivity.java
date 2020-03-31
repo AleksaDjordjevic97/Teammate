@@ -1,6 +1,7 @@
 package com.aleksadjordjevic.teammate;
 
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -173,6 +174,12 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
             {
                 Intent rangIntent = new Intent(getApplicationContext(), RangActivity.class);
                 startActivity(rangIntent);
+                break;
+            }
+            case R.id.nav_AddFriends:
+            {
+                Intent addFriendsIntent = new Intent(getApplicationContext(), AddFriendsActivity.class);
+                startActivity(addFriendsIntent);
                 break;
             }
             case R.id.nav_logout:

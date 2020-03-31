@@ -16,6 +16,11 @@
             android:title="Search" />
 
         <item
+            android:id="@+id/nav_AddFriends"
+            android:icon="@drawable/addfriends"
+            android:title="Add friends" />
+
+        <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/logout"
             android:title="Logout" />

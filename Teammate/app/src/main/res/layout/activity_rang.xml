@@ -61,7 +61,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rcvRang"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="500dp"
                 android:layout_centerInParent="true"/>
 
 
