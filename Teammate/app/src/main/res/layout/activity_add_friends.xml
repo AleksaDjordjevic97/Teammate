@@ -65,16 +65,30 @@
         </LinearLayout>
 
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/layoutFriendsAF"
             android:layout_below="@+id/layoutBTtext"
             android:layout_marginTop="50dp"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <ImageButton
+                android:id="@+id/btnFindFriendsAF"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginBottom="20dp"
+                android:layout_marginLeft="20dp"
+                android:src="@drawable/find_friends"
+                android:background="@color/fui_transparent"/>
 
+            <ListView
+                android:id="@+id/listFriendsAF"
+                android:layout_width="match_parent"
+                android:layout_height="350dp"
+                android:padding="15dp"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
 
 
