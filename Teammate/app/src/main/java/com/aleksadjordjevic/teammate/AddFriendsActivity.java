@@ -1,11 +1,7 @@
 package com.aleksadjordjevic.teammate;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import android.Manifest;
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
@@ -14,11 +10,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -27,15 +23,12 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -112,7 +105,7 @@ public class AddFriendsActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if(txtStatus.getText().equals("CONNECTED!"))
+                if(txtStatus.getText().equals("Connected Successfully!"))
                     sendReceive.write(userID.getBytes());
             }
         });
@@ -153,15 +146,19 @@ public class AddFriendsActivity extends AppCompatActivity
             {
                 case STATE_LISTENING:
                     txtStatus.setText("Listening");
+                    txtStatus.setTextColor(Color.WHITE);
                     break;
                 case STATE_CONNECTING:
                     txtStatus.setText("Connecting");
+                    txtStatus.setTextColor(Color.WHITE);
                     break;
                 case STATE_CONNECTED:
-                    txtStatus.setText("CONNECTED!");
+                    txtStatus.setText("Connected Successfully!");
+                    txtStatus.setTextColor(Color.GREEN);
                     break;
                 case STATE_CONNECTION_FAILED:
                     txtStatus.setText("Connection failed");
+                    txtStatus.setTextColor(Color.RED);
                     break;
                case STATE_MESSAGE_RECEIVED:
                     byte[] readBuff = (byte[])msg.obj;
