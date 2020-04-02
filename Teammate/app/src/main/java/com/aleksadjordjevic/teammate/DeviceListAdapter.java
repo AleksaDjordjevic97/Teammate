@@ -11,11 +11,18 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.UUID;
 
 public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
 {
+
+    TextView deviceName, deviceAdress;
     private LayoutInflater mLayoutInflater;
     private ArrayList<BluetoothDevice> mDevices;
     private int mViewResourceId;
@@ -36,51 +43,17 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
 
         final BluetoothDevice device = mDevices.get(position);
         mBlueAdapter = BluetoothAdapter.getDefaultAdapter();
-        Set<BluetoothDevice> btPaired = mBlueAdapter.getBondedDevices();
 
         if (device != null)
         {
-            TextView deviceName = convertView.findViewById(R.id.txtBTUserAF);
-            TextView deviceAdress = convertView.findViewById(R.id.txtBTAddressAF);
-            final TextView txtPair = convertView.findViewById(R.id.txtPairAF);
-            final ImageButton btnPair = convertView.findViewById(R.id.btnPairAF);
-            final ImageButton btnAddFriend = convertView.findViewById(R.id.btnAddFriendAF);
+            deviceName = convertView.findViewById(R.id.txtBTUserAF);
+            deviceAdress = convertView.findViewById(R.id.txtBTAddressAF);
+
 
             if (deviceName != null)
                 deviceName.setText(device.getName());
             if (deviceAdress != null)
                 deviceAdress.setText(device.getAddress());
-
-            if(btPaired.contains(device))
-            {
-                txtPair.setText("");
-                btnPair.setClickable(false);
-                btnPair.setVisibility(View.INVISIBLE);
-            }
-            btnPair.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    if(mBlueAdapter.isEnabled())
-                    {
-                        mBlueAdapter.cancelDiscovery();
-                        device.createBond();
-                        txtPair.setText("");
-                        btnPair.setClickable(false);
-                        btnPair.setVisibility(View.INVISIBLE);
-                    }
-                }
-            });
-
-            btnAddFriend.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-
-                }
-            });
 
         }
 

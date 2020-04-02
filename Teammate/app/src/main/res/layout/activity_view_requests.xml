@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#090936"
+    tools:context=".ViewRequestsActivity">
+
+    <RelativeLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <RelativeLayout
+            android:id="@+id/layoutBackVR"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/btnBackVR"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/back"
+                android:background="@android:color/transparent"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutListening"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/layoutBackVR"
+            android:layout_marginTop="30dp">
+
+            <ImageButton
+                android:id="@+id/btnListeningVR"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/listening_off"
+                android:background="@color/fui_transparent"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutStatusVR"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/layoutListening"
+            android:layout_marginTop="30dp">
+
+            <TextView
+                android:id="@+id/txtStatusVR"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tap to enable listening"
+                android:textColor="#FFFFFF"
+                android:textSize="20dp"
+                android:layout_centerHorizontal="true"/>
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutStatusVR"
+            android:layout_marginTop="50dp">
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="5dp"
+                android:layout_centerHorizontal="true">
+
+
+                <TextView
+                    android:id="@+id/txtUserVR"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="USER"
+                    android:textColor="#FFFFFF"
+                    android:textSize="25dp"
+                    android:layout_marginBottom="20dp"/>
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageButton
+                        android:id="@+id/btnAcceptVR"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/accept"
+                        android:background="@color/fui_transparent"
+                        android:layout_marginBottom="20dp"
+                        android:layout_marginRight="10dp"/>
+
+                    <ImageButton
+                        android:id="@+id/btnDeclineVR"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/decline"
+                        android:background="@color/fui_transparent"
+                        android:layout_marginBottom="20dp"/>
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+
+
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

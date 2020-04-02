@@ -178,7 +178,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
             }
             case R.id.nav_AddFriends:
             {
-                Intent addFriendsIntent = new Intent(getApplicationContext(), AddFriendsActivity.class);
+                Intent addFriendsIntent = new Intent(getApplicationContext(), FriendMenuActivity.class);
                 startActivity(addFriendsIntent);
                 break;
             }

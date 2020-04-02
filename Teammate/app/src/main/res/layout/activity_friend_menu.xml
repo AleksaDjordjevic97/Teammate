@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#090936"
+    tools:context=".FriendMenuActivity">
+
+    <RelativeLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <RelativeLayout
+            android:id="@+id/layoutBackFM"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/btnBackFM"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/back"
+                android:background="@android:color/transparent"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutFriendsMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutBackFM"
+            android:layout_marginTop="30dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Friends Menu"
+                android:background="@drawable/frame_square"
+                android:layout_centerHorizontal="true"
+                android:textColor="#FFFFFF"
+                android:textSize="35dp"
+                android:textStyle="bold"
+                android:textAlignment="center"
+                android:padding="5dp"/>
+
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutButtonsFM"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layoutFriendsMenu"
+            android:layout_marginTop="150dp"
+            android:orientation="vertical"
+            android:layout_centerHorizontal="true">
+
+
+            <Button
+                android:id="@+id/btnSendReqFM"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                android:background="@drawable/btn_round"
+                android:text="Send Request"
+                android:textColor="#FFFFFF"
+                android:textSize="20dp"
+                android:layout_marginBottom="20dp"/>
+
+            <Button
+                android:id="@+id/btnViewReqFM"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                android:background="@drawable/btn_round"
+                android:text="View Requests"
+                android:textColor="#FFFFFF"
+                android:textSize="20dp"
+                android:layout_marginBottom="20dp"/>
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/layoutBluetoothFM"
+            android:layout_below="@+id/layoutButtonsFM"
+            android:orientation="vertical"
+            android:layout_marginTop="30dp"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/bluetoothIconFM"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/bluetooth_off"
+                android:background="@android:color/transparent" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutBTtextFM"
+            android:layout_below="@+id/layoutBluetoothFM"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tap icon to turn bluetooth on/off"
+                android:textColor="#FFFFFF"
+                android:textStyle="italic"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>

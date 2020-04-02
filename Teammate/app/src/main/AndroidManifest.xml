@@ -24,7 +24,9 @@
         android:roundIcon="@mipmap/launcher_icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AddFriendsActivity"></activity>
+        <activity android:name=".ViewRequestsActivity"></activity>
+        <activity android:name=".FriendMenuActivity" />
+        <activity android:name=".AddFriendsActivity" />
         <activity android:name=".FriendsActivity" />
         <activity android:name=".ProfileActivity" />
         <!--
