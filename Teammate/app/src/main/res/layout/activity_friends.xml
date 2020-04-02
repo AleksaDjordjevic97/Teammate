@@ -15,7 +15,7 @@
 
 
         <RelativeLayout
-            android:id="@+id/layoutBackP"
+            android:id="@+id/layoutBackF"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -27,6 +27,42 @@
                 android:background="@android:color/transparent"
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="10dp"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutFriendsF"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutBackF"
+            android:layout_marginTop="30dp">
+
+            <TextView
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:text="Friends"
+                android:background="@drawable/frame_square"
+                android:layout_centerHorizontal="true"
+                android:textColor="#FFFFFF"
+                android:textSize="30dp"
+                android:textStyle="bold"
+                android:textAlignment="center"
+                android:padding="5dp"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutFriendsF"
+            android:layout_marginTop="60dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcvFriends"
+                android:layout_width="match_parent"
+                android:layout_height="500dp"
+                android:layout_centerInParent="true"/>
+
 
         </RelativeLayout>
 
