@@ -20,6 +20,9 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
@@ -52,7 +55,9 @@ public class ViewRequestsActivity extends AppCompatActivity
     FirebaseAuth mAuth;
     FirebaseUser user;
     String userID;
+    String otherID;
     FirebaseFirestore mDatabase;
+    CollectionReference usersRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -68,17 +73,15 @@ public class ViewRequestsActivity extends AppCompatActivity
         txtStatus = findViewById(R.id.txtStatusVR);
         txtUser = findViewById(R.id.txtUserVR);
 
-        txtUser.setVisibility(View.INVISIBLE);
-        btnAccept.setVisibility(View.INVISIBLE);
-        btnDecline.setVisibility(View.INVISIBLE);
-
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         userID = user.getUid();
         mDatabase = FirebaseFirestore.getInstance();
+        usersRef = mDatabase.collection("users");
 
         mBlueAdapter = BluetoothAdapter.getDefaultAdapter();
 
+        changeRequest(false);
 
         btnListening.setOnClickListener(new View.OnClickListener()
         {
@@ -86,6 +89,12 @@ public class ViewRequestsActivity extends AppCompatActivity
             public void onClick(View v)
             {
                 //turnOnBluetooth();
+                if(!mBlueAdapter.isDiscovering())
+                {
+                    Intent discoverableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+                    startActivity(discoverableBT);
+                }
+
                 ServerClass serverClass = new ServerClass();
                 serverClass.start();
                 btnListening.setImageResource(R.drawable.listening_on);
@@ -107,30 +116,43 @@ public class ViewRequestsActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                final String otherID = txtUser.getText().toString();
+                //final String otherID = txtUser.getText().toString();
                 Map<String,Object> userMap = new HashMap<>();
                 userMap.put("friends", Arrays.asList(otherID));
                 final Map<String,Object> otherMap = new HashMap<>();
-                userMap.put("friends", Arrays.asList(userID));
+                otherMap.put("friends", Arrays.asList(userID));
 
-//                mDatabase.collection("users").document(userID).update(userMap).addOnSuccessListener(new OnSuccessListener<Void>()
-//                {
-//                    @Override
-//                    public void onSuccess(Void aVoid)
-//                    {
-//                        Toast.makeText(getApplicationContext(), "You are now friends!", Toast.LENGTH_SHORT).show();
-//
-//                    }
-//                });
+                usersRef.document(userID).update("friends", FieldValue.arrayUnion(otherID)).addOnSuccessListener(new OnSuccessListener<Void>()
+                {
+                    @Override
+                    public void onSuccess(Void aVoid)
+                    {
+                        usersRef.document(otherID).update("friends", FieldValue.arrayUnion(userID)).addOnSuccessListener(new OnSuccessListener<Void>()
+                        {
+                            @Override
+                            public void onSuccess(Void aVoid)
+                            {
+                                changeRequest(false);
+                                Toast.makeText(getApplicationContext(), "You are now friends!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
 
-//                mDatabase.collection("users").document(otherID).update(otherMap).addOnSuccessListener(new OnSuccessListener<Void>()
-//                {
-//                    @Override
-//                    public void onSuccess(Void aVoid)
-//                    {
-//                        Toast.makeText(getApplicationContext(), "You are now friends!", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
+
+                    }
+                });
+
+
+
+            }
+        });
+
+        btnDecline.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                otherID = "";
+                changeRequest(false);
             }
         });
 
@@ -177,6 +199,23 @@ public class ViewRequestsActivity extends AppCompatActivity
 //        super.onActivityResult(requestCode, resultCode, data);
 //    }
 
+    protected void changeRequest(boolean visibility)
+    {
+        if(visibility)
+        {
+            txtUser.setVisibility(View.VISIBLE);
+            btnAccept.setVisibility(View.VISIBLE);
+            btnDecline.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            txtUser.setVisibility(View.INVISIBLE);
+            btnAccept.setVisibility(View.INVISIBLE);
+            btnDecline.setVisibility(View.INVISIBLE);
+        }
+
+    }
+
     Handler handler = new Handler(new Handler.Callback()
     {
         @Override
@@ -203,10 +242,20 @@ public class ViewRequestsActivity extends AppCompatActivity
                 case STATE_MESSAGE_RECEIVED:
                     byte[] readBuff = (byte[])msg.obj;
                     String tempMSg = new String(readBuff,0,msg.arg1);
-                    txtUser.setVisibility(View.VISIBLE);
-                    btnAccept.setVisibility(View.VISIBLE);
-                    btnDecline.setVisibility(View.VISIBLE);
-                   txtUser.setText(tempMSg);
+                    otherID = tempMSg;
+
+                    usersRef.document(tempMSg).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>()
+                    {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot)
+                        {
+                            UserModel usr = documentSnapshot.toObject(UserModel.class);
+                            txtUser.setText(usr.getUsername());
+                            changeRequest(true);
+
+                        }
+                    });
+
                     break;
 
             }

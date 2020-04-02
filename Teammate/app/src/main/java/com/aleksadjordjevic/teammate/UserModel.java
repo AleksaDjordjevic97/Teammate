@@ -1,24 +1,27 @@
 package com.aleksadjordjevic.teammate;
 
-public class RangModule
+import java.util.List;
+
+public class UserModel
 {
     public String username;
     public String profile_image;
     public long numOfPosts;
     public String phone;
     public String email;
+    public List<String> friends;
 
-    public RangModule()
+    public UserModel()
     {
     }
 
-    public RangModule(String username, String profile_image, long numOfPosts, String phone, String email)
+    public UserModel(String username, String profile_image, long numOfPosts, String phone, String email)
     {
         this.username = username;
         this.profile_image = profile_image;
         this.numOfPosts = numOfPosts;
         this.phone = phone;
-        this. email = email;
+        this.email = email;
     }
 
     public String getUsername()
@@ -69,5 +72,15 @@ public class RangModule
     public void setEmail(String email)
     {
         this.email = email;
+    }
+
+    public List<String> getFriends()
+    {
+        return friends;
+    }
+
+    public void setFriends(List<String> friends)
+    {
+        this.friends = friends;
     }
 }

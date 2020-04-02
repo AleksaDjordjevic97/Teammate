@@ -188,7 +188,7 @@ public class ProfileActivity extends AppCompatActivity
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot)
             {
-                User usr = documentSnapshot.toObject(User.class);
+                UserModel usr = documentSnapshot.toObject(UserModel.class);
 
                 txtEmail.setText(usr.getEmail());
                 txtUsername.setText(usr.getUsername());

@@ -136,7 +136,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot)
             {
-                User usr = documentSnapshot.toObject(User.class);
+                UserModel usr = documentSnapshot.toObject(UserModel.class);
 
                 navUsername.setText(usr.getUsername());
                 Glide.with(getApplicationContext())

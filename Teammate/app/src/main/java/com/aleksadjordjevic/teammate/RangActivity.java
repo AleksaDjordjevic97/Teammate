@@ -75,15 +75,15 @@ public class RangActivity extends AppCompatActivity
     {
         Query showRang = mDatabase.collection("users");//.orderBy("numOfPosts",Query.Direction.DESCENDING);
 
-        FirestoreRecyclerOptions<RangModule> options = new FirestoreRecyclerOptions.Builder<RangModule>()
-               .setQuery(showRang, RangModule.class)
+        FirestoreRecyclerOptions<UserModel> options = new FirestoreRecyclerOptions.Builder<UserModel>()
+               .setQuery(showRang, UserModel.class)
                 .build();
 
 
-        adapter = new FirestoreRecyclerAdapter<RangModule, RangViewHolder>(options)
+        adapter = new FirestoreRecyclerAdapter<UserModel, RangViewHolder>(options)
         {
             @Override
-            protected void onBindViewHolder(@NonNull RangViewHolder holder, int position, @NonNull RangModule model)
+            protected void onBindViewHolder(@NonNull RangViewHolder holder, int position, @NonNull UserModel model)
             {
                 holder.username.setText(model.getUsername());
                 Glide.with(RangActivity.this)
