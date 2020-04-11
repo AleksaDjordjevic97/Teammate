@@ -1,18 +1,28 @@
 package com.aleksadjordjevic.teammate;
 
+import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.ServerTimestamp;
+
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class UserModel
 {
-    public String username;
-    public String profile_image;
-    public long numOfPosts;
-    public String phone;
-    public String email;
-    public List<String> friends;
+
+
+    private String username;
+    private String profile_image;
+    private long numOfPosts;
+    private String phone;
+    private String email;
+    private List<String> friends;
+    private GeoPoint geo_point;
+    private @ServerTimestamp Date timestamp;
 
     public UserModel()
     {
+        this.friends = new ArrayList<>();
     }
 
     public UserModel(String username, String profile_image, long numOfPosts, String phone, String email)
@@ -22,6 +32,19 @@ public class UserModel
         this.numOfPosts = numOfPosts;
         this.phone = phone;
         this.email = email;
+        this.friends = new ArrayList<>();
+    }
+
+    public UserModel(String username, String profile_image, long numOfPosts, String phone, String email, GeoPoint geo_point, Date timestamp)
+    {
+        this.username = username;
+        this.profile_image = profile_image;
+        this.numOfPosts = numOfPosts;
+        this.phone = phone;
+        this.email = email;
+        this.friends = new ArrayList<>();
+        this.geo_point = geo_point;
+        this.timestamp = timestamp;
     }
 
     public String getUsername()
@@ -82,5 +105,25 @@ public class UserModel
     public void setFriends(List<String> friends)
     {
         this.friends = friends;
+    }
+
+    public GeoPoint getGeo_point()
+    {
+        return geo_point;
+    }
+
+    public void setGeo_point(GeoPoint geo_point)
+    {
+        this.geo_point = geo_point;
+    }
+
+    public Date getTimestamp()
+    {
+        return timestamp;
+    }
+
+    public void setTimestamp(Date timestamp)
+    {
+        this.timestamp = timestamp;
     }
 }
