@@ -184,6 +184,7 @@ public class RegisterActivity extends AppCompatActivity
         userMap.put("numOfPosts",0);
         userMap.put("email",user.getEmail());
         userMap.put("phone",txtPhone.getText().toString().trim());
+        userMap.put("locationSharing",true);
         mDatabase.collection("users").document(userID).set(userMap).addOnCompleteListener(new OnCompleteListener<Void>()
         {
             @Override

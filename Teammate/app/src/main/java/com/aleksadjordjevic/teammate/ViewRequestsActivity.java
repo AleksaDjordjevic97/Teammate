@@ -1,6 +1,7 @@
 package com.aleksadjordjevic.teammate;
 
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -17,10 +18,13 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -133,6 +137,7 @@ public class ViewRequestsActivity extends AppCompatActivity
                             public void onSuccess(Void aVoid)
                             {
                                 changeRequest(false);
+                                setUser();
                                 Toast.makeText(getApplicationContext(), "You are now friends!", Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -214,6 +219,24 @@ public class ViewRequestsActivity extends AppCompatActivity
             btnDecline.setVisibility(View.INVISIBLE);
         }
 
+    }
+
+    protected void setUser()
+    {
+        DocumentReference profileRef = mDatabase.collection("users").document(userID);
+
+        profileRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task)
+            {
+                if(task.isSuccessful())
+                {
+                    UserModel u = task.getResult().toObject(UserModel.class);
+                    ((UserClient)(getApplicationContext())).setUser(u);
+                }
+            }
+        });
     }
 
     Handler handler = new Handler(new Handler.Callback()

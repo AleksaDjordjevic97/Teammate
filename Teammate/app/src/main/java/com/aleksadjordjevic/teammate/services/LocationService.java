@@ -117,7 +117,6 @@ public class LocationService extends Service
 
                         if (location != null)
                         {
-
                             profileRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>()
                             {
                                 @Override

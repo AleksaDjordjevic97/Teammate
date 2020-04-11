@@ -1,6 +1,7 @@
 package com.aleksadjordjevic.teammate;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -25,7 +26,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -46,6 +49,8 @@ public class ProfileActivity extends AppCompatActivity
     TextView txtUsername,txtEmail,txtNumOfPosts,txtPhone;
     CircleImageView imgProfile;
     ProgressDialog mDialog;
+
+    UserModel userModel;
 
     FirebaseAuth mAuth;
     FirebaseUser user;
@@ -75,8 +80,7 @@ public class ProfileActivity extends AppCompatActivity
         mDatabase = FirebaseFirestore.getInstance();
         mStorage = FirebaseStorage.getInstance().getReference().child("profile_images");
 
-
-        fillText();
+        userModel = ((UserClient)(getApplicationContext())).getUser();
 
         btnFriends.setOnClickListener(new View.OnClickListener()
         {
@@ -167,6 +171,8 @@ public class ProfileActivity extends AppCompatActivity
                                                 .load(uriLink)
                                                 .placeholder(R.drawable.user)
                                                 .into(imgProfile);
+
+                                        setUser();
                                     }
                                 });
                             }
@@ -200,6 +206,24 @@ public class ProfileActivity extends AppCompatActivity
                         .placeholder(R.drawable.user)
                         .into(imgProfile);
 
+            }
+        });
+    }
+
+    protected void setUser()
+    {
+        DocumentReference profileRef = mDatabase.collection("users").document(userID);
+
+        profileRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task)
+            {
+                if(task.isSuccessful())
+                {
+                    UserModel u = task.getResult().toObject(UserModel.class);
+                    ((UserClient)(getApplicationContext())).setUser(u);
+                }
             }
         });
     }

@@ -67,6 +67,8 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     FirebaseFirestore mDatabase;
     DocumentReference profileRef;
 
+    UserModel userModel;
+
     DrawerLayout mDrawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle actionBarDrawerToggle;
@@ -79,9 +81,9 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     LatLngBounds mMapBoundary;
 
     FusedLocationProviderClient mFusedLocationClient;
-    UserModel userModel;
+
     List<String> friendsIDList;
-    List<UserModel> friendsList;
+    ArrayList<UserModel> friendsList;
     ClusterManager mClusterManager;
     MyClusterManagerRenderer mClusterManagerRenderer;
     ArrayList<ClusterMarker> mClusterMarkers;
@@ -101,6 +103,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         mDatabase = FirebaseFirestore.getInstance();
         profileRef = mDatabase.collection("users").document(userID);
 
+        userModel = ((UserClient)(getApplicationContext())).getUser();
 
         navigationView=findViewById(R.id.nav_view);
         mDrawerLayout = findViewById(R.id.drawer_layout);
@@ -117,7 +120,6 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
             sendLocation = false;
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        userModel = new UserModel();
         friendsIDList = new ArrayList<>();
         friendsList = new ArrayList<>();
         mClusterMarkers = new ArrayList<>();
@@ -198,41 +200,29 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
 
     }
 
-    protected void setUserDetails()
-    {
-
-        profileRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>()
-        {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot)
-            {
-                userModel = documentSnapshot.toObject(UserModel.class);
-
-                navUsername.setText(userModel.getUsername());
-                Glide.with(getApplicationContext())
-                        .load(userModel.getProfile_image())
-                        .placeholder(R.drawable.user)
-                        .into(navImage);
-                sendLocation = userModel.isLocationSharing();
-                locationSwitch.setChecked(sendLocation);
-
-                //getLastKnownLocation();
-                if(sendLocation)
-                    startLocationService();
-
-                getFriendsList();
-
-            }
-        });
-    }
-
     @Override
     protected void onResume()
     {
         super.onResume();
-
+        userModel = ((UserClient)(getApplicationContext())).getUser();
         setUserDetails();
-       // getLastKnownLocation();
+    }
+
+
+    protected void setUserDetails()
+    {
+        navUsername.setText(userModel.getUsername());
+        Glide.with(getApplicationContext())
+                .load(userModel.getProfile_image())
+                .placeholder(R.drawable.user)
+                .into(navImage);
+        sendLocation = userModel.isLocationSharing();
+        locationSwitch.setChecked(sendLocation);
+
+        if (sendLocation)
+            startLocationService();
+
+       // getFriendsLocations();
     }
 
     @Override
@@ -320,28 +310,29 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
 //    }
 
 
-    protected void getFriendsList()
-    {
-        DocumentReference userRef = mDatabase.collection("users").document(userID);
-
-        userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>()
-        {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot)
-            {
-               UserModel usr = documentSnapshot.toObject(UserModel.class);
-                if(usr.getFriends() != null)
-                {
-                    friendsIDList = usr.getFriends();
-                    getFriendsLocations();
-                }
-            }
-        });
-    }
+//    protected void getFriendsList()
+//    {
+//        profileRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>()
+//        {
+//            @Override
+//            public void onSuccess(DocumentSnapshot documentSnapshot)
+//            {
+//               UserModel usr = documentSnapshot.toObject(UserModel.class);
+//                if(usr.getFriends() != null)
+//                {
+//                    friendsIDList = userModel.getFriends();
+//                    getFriendsLocations();
+//                }
+//            }
+//        });
+//    }
 
     protected void getFriendsLocations()
     {
-        for (String fid:friendsIDList)
+        friendsIDList = userModel.getFriends();
+        friendsList.clear();
+
+        for (final String fid:friendsIDList)
         {
 
             DocumentReference friendRef = mDatabase.collection("users").document(fid);
@@ -352,13 +343,22 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
                 public void onSuccess(DocumentSnapshot documentSnapshot)
                 {
                     UserModel usr = documentSnapshot.toObject(UserModel.class);
-                    if(!friendsList.contains(usr) && usr.isLocationSharing())
+                    if(usr.isLocationSharing())
                         friendsList.add(usr);
+
+                    if(friendsIDList.size() > 1)
+                        friendsIDList.remove(fid);
+                    else
+                    {
+                        friendsIDList.remove(fid);
+                        addFriendMarkers();
+                    }
+
                 }
             });
         }
-        setCameraView();
-        addMapMarkers();
+
+
     }
 
     protected void setCameraView()
@@ -373,7 +373,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mMapBoundary,0));
     }
 
-    protected void addMapMarkers()
+    protected void addMyMapMarker()
     {
 
         if(mMap != null)
@@ -383,14 +383,14 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
 
             if(mClusterManagerRenderer == null)
             {
-                mClusterManagerRenderer = new MyClusterManagerRenderer(getApplicationContext(), mMap, mClusterManager);
+                mClusterManagerRenderer = new MyClusterManagerRenderer(IndexActivity.this, mMap, mClusterManager);
                 mClusterManager.setRenderer(mClusterManagerRenderer);
             }
 
             try
             {
                 String snippet = "Email: " + userModel.getEmail() + "\n"
-                        +"Number of posts: " + userModel.getNumOfPosts();
+                        +" Number of posts: " + userModel.getNumOfPosts();
 
 
                 ClusterMarker myClusterMarker = new ClusterMarker(
@@ -406,6 +406,23 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
             }catch (NullPointerException e)
             { }
             mClusterManager.cluster();
+
+        }
+    }
+
+    protected void addFriendMarkers()
+    {
+
+        if(mMap != null)
+        {
+            if(mClusterManager == null)
+                mClusterManager = new ClusterManager<ClusterMarker>(getApplicationContext(), mMap);
+
+            if(mClusterManagerRenderer == null)
+            {
+                mClusterManagerRenderer = new MyClusterManagerRenderer(getApplicationContext(), mMap, mClusterManager);
+                mClusterManager.setRenderer(mClusterManagerRenderer);
+            }
 
             for(UserModel userLocation: friendsList)
             {
@@ -430,7 +447,6 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
             }
             mClusterManager.cluster();
 
-            setCameraView();
         }
     }
 
@@ -438,13 +454,23 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     public void onMapReady(GoogleMap googleMap)
     {
         mMap = googleMap;
-
+        addMyMapMarker();
         // Add a marker in Sydney and move the camera
 //        LatLng sydney = new LatLng(-34, 151);
 //        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney").icon());
 //       mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
-      //  setCameraView();
+        mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback()
+        {
+            @Override
+            public void onMapLoaded()
+            {
+                getFriendsLocations();
+                setCameraView();
+                //addMyMapMarker();
+            }
+        });
+
 
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED)

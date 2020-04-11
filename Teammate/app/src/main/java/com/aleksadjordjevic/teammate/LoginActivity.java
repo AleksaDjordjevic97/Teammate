@@ -20,6 +20,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity
@@ -30,7 +32,10 @@ public class LoginActivity extends AppCompatActivity
     Button btnLogin;
     ProgressDialog mDialog;
     FirebaseAuth mAuth;
+    FirebaseUser user;
+    String userID;
     FirebaseFirestore mDatabase;
+    DocumentReference profileRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -88,8 +93,7 @@ public class LoginActivity extends AppCompatActivity
                     if(task.isSuccessful())
                     {
                         Toast.makeText(getApplicationContext(),"Login successful!",Toast.LENGTH_SHORT).show();
-                        sendToMap();
-
+                        setUser();
                     }
                     else
                     {
@@ -127,6 +131,27 @@ public class LoginActivity extends AppCompatActivity
         }
 
         return true;
+    }
+
+    protected void setUser()
+    {
+        user = mAuth.getCurrentUser();
+        userID = user.getUid();
+        profileRef = mDatabase.collection("users").document(userID);
+
+        profileRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task)
+            {
+                if(task.isSuccessful())
+                {
+                    UserModel u = task.getResult().toObject(UserModel.class);
+                    ((UserClient)(getApplicationContext())).setUser(u);
+                    sendToMap();
+                }
+            }
+        });
     }
 
     public void sendToMap()

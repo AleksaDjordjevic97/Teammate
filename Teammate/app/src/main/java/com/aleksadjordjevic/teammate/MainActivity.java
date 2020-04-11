@@ -20,7 +20,13 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -31,6 +37,10 @@ public class MainActivity extends AppCompatActivity
 
     CountDownTimer countDownTimer;
     FirebaseAuth mAuth;
+    FirebaseUser user;
+    String userID;
+    FirebaseFirestore mDatabase;
+    DocumentReference profileRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -40,30 +50,6 @@ public class MainActivity extends AppCompatActivity
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         mAuth = FirebaseAuth.getInstance();
-
-//        countDownTimer = new CountDownTimer(3500,1000)
-//        {
-//            @Override
-//            public void onTick(long millisUntilFinished)
-//            {
-//
-//            }
-//
-//            @Override
-//            public void onFinish()
-//            {
-//                countDownTimer.cancel();
-//
-//                Intent nextActivity;
-//                if(mAuth.getCurrentUser() != null)
-//                    nextActivity = new Intent(getApplicationContext(), IndexActivity.class);
-//                else
-//                    nextActivity = new Intent(getApplicationContext(), Main2Activity.class);
-//
-//
-//                startActivity(nextActivity);
-//            }
-//        }.start();
 
     }
 
@@ -75,47 +61,105 @@ public class MainActivity extends AppCompatActivity
         {
 
             countDownTimer = new CountDownTimer(3500,1000)
-        {
-            @Override
-            public void onTick(long millisUntilFinished)
             {
+                @Override
+                public void onTick(long millisUntilFinished)
+                {
 
-            }
+                }
 
-            @Override
-            public void onFinish()
-            {
-                countDownTimer.cancel();
-
-                Intent nextActivity;
-                if(mAuth.getCurrentUser() != null)
-                    nextActivity = new Intent(getApplicationContext(), IndexActivity.class);
-                else
-                    nextActivity = new Intent(getApplicationContext(), Main2Activity.class);
+                @Override
+                public void onFinish()
+                {
+                    countDownTimer.cancel();
 
 
-                startActivity(nextActivity);
-            }
-        }.start();
+                    if (mAuth.getCurrentUser() != null)
+                        setUser();
+                    else
+                    {
+                        Intent nextActivity = new Intent(getApplicationContext(), Main2Activity.class);
+                        startActivity(nextActivity);
+                    }
+
+                }
+            }.start();
 
         }
     }
 
-    private boolean checkMapServices(){
-        if(isServicesOK()){
-            if(isMapsEnabled()){
-                return true;
+    protected void setUser()
+    {
+        user = mAuth.getCurrentUser();
+        userID = user.getUid();
+        mDatabase = FirebaseFirestore.getInstance();
+        profileRef = mDatabase.collection("users").document(userID);
+
+        profileRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task)
+            {
+                if(task.isSuccessful())
+                {
+                    UserModel u = task.getResult().toObject(UserModel.class);
+                    ((UserClient)(getApplicationContext())).setUser(u);
+                    Intent nextActivity = new Intent(getApplicationContext(), IndexActivity.class);
+                    startActivity(nextActivity);
+                }
             }
-        }
+        });
+    }
+
+    private boolean checkMapServices()
+    {
+        if(isServicesOK())
+            if(isMapsEnabled())
+                return true;
+
         return false;
     }
 
-    private void buildAlertMessageNoGps() {
+    public boolean isServicesOK()
+    {
+
+        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MainActivity.this);
+
+        if(available == ConnectionResult.SUCCESS)
+            return true;
+        else if(GoogleApiAvailability.getInstance().isUserResolvableError(available))
+        {
+            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MainActivity.this, available, ERROR_DIALOG_REQUEST);
+            dialog.show();
+        }
+        else
+            Toast.makeText(this, "You can't make map requests", Toast.LENGTH_SHORT).show();
+
+        return false;
+    }
+
+    public boolean isMapsEnabled()
+    {
+        final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+
+        if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) )
+        {
+            buildAlertMessageNoGps();
+            return false;
+        }
+
+        return true;
+    }
+
+    private void buildAlertMessageNoGps()
+    {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("This application requires GPS to work properly, do you want to enable it?")
                 .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                {
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id)
+                    {
                         Intent enableGpsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                         startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS);
                     }
@@ -124,78 +168,44 @@ public class MainActivity extends AppCompatActivity
         alert.show();
     }
 
-    public boolean isMapsEnabled(){
-        final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
 
-        if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
-            buildAlertMessageNoGps();
-            return false;
-        }
-        return true;
-    }
 
-    private void getLocationPermission() {
-        /*
-         * Request location permission, so that we can get the location of the
-         * device. The result of the permission request is handled by a callback,
-         * onRequestPermissionsResult.
-         */
-        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
+    private void getLocationPermission()
+    {
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
             mLocationPermissionGranted = true;
-        } else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        }
+        else
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+
     }
 
-    public boolean isServicesOK(){
 
-        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MainActivity.this);
-
-        if(available == ConnectionResult.SUCCESS){
-            //everything is fine and the user can make map requests
-            return true;
-        }
-        else if(GoogleApiAvailability.getInstance().isUserResolvableError(available)){
-            //an error occured but we can resolve it
-            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MainActivity.this, available, ERROR_DIALOG_REQUEST);
-            dialog.show();
-        }else{
-            Toast.makeText(this, "You can't make map requests", Toast.LENGTH_SHORT).show();
-        }
-        return false;
-    }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[],
-                                           @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults)
+    {
         mLocationPermissionGranted = false;
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        switch (requestCode)
+        {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION:
+            {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                     mLocationPermissionGranted = true;
-                }
+
             }
         }
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_ENABLE_GPS: {
-                if(mLocationPermissionGranted){
-
-                }
-                else{
+        switch (requestCode)
+        {
+            case PERMISSIONS_REQUEST_ENABLE_GPS:
+            {
+                if (!mLocationPermissionGranted)
                     getLocationPermission();
-                }
             }
         }
 

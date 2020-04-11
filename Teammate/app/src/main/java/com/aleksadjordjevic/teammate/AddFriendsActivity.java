@@ -1,5 +1,6 @@
 package com.aleksadjordjevic.teammate;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
@@ -8,6 +9,7 @@ import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
@@ -23,8 +25,13 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.io.IOException;
 import java.io.InputStream;
@@ -90,15 +97,6 @@ public class AddFriendsActivity extends AppCompatActivity
             }
         });
 
-//        listen.setOnClickListener(new View.OnClickListener()
-//        {
-//            @Override
-//            public void onClick(View v)
-//            {
-//                ServerClass serverClass = new ServerClass();
-//                serverClass.start();
-//            }
-//        });
 
         btnSendReq.setOnClickListener(new View.OnClickListener()
         {
@@ -131,10 +129,40 @@ public class AddFriendsActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
+                setUser();
                 Intent friendsMenuIntent = new Intent(getApplicationContext(), FriendMenuActivity.class);
                 startActivity(friendsMenuIntent);
             }
         });
+    }
+
+    protected void setUser()
+    {
+        DocumentReference profileRef = mDatabase.collection("users").document(userID);
+
+        profileRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task)
+            {
+                if(task.isSuccessful())
+                {
+                    UserModel u = task.getResult().toObject(UserModel.class);
+                    ((UserClient)(getApplicationContext())).setUser(u);
+                }
+            }
+        });
+    }
+
+
+    @Override
+    public void onBackPressed()
+    {
+        setUser();
+        Intent exit = new Intent(getApplicationContext(), IndexActivity.class);
+        exit.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(exit);
+        finish();
     }
 
     Handler handler = new Handler(new Handler.Callback()

@@ -8,6 +8,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,6 +20,8 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.signin.internal.Storage;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -26,7 +29,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -51,6 +56,8 @@ public class Register2Activity extends AppCompatActivity
     String userID;
     StorageReference mStorage;
     FirebaseFirestore mDatabase;
+    DocumentReference profileRef;
+    FusedLocationProviderClient mFusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -67,6 +74,7 @@ public class Register2Activity extends AppCompatActivity
         userID = user.getUid();
         mStorage = FirebaseStorage.getInstance().getReference().child("profile_images");
         mDatabase = FirebaseFirestore.getInstance();
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         btnRegister.setOnClickListener(new View.OnClickListener()
         {
@@ -187,7 +195,7 @@ public class Register2Activity extends AppCompatActivity
                         {
                             Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
                             user.sendEmailVerification();
-                            sendToMap();
+                            setUser();
                         }
                     });
                 }
@@ -229,6 +237,44 @@ public class Register2Activity extends AppCompatActivity
         mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(mainIntent);
         finish();
+    }
+
+    protected void setUser()
+    {
+        profileRef = mDatabase.collection("users").document(userID);
+
+        profileRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task)
+            {
+                if(task.isSuccessful())
+                {
+                    final UserModel u = task.getResult().toObject(UserModel.class);
+                    mFusedLocationClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>()
+                    {
+                        @Override
+                        public void onComplete(@NonNull Task<Location> task)
+                        {
+                            if(task.isSuccessful())
+                            {
+                                Location location = task.getResult();
+                                GeoPoint geoPoint = new GeoPoint(location.getLatitude(),location.getLongitude());
+
+                                u.setGeo_point(geoPoint);
+                                u.setTimestamp(null);
+
+                                ((UserClient)(getApplicationContext())).setUser(u);
+                                sendToMap();
+
+                            }
+
+                        }
+                    });
+
+                }
+            }
+        });
     }
 
     public void sendToMap()

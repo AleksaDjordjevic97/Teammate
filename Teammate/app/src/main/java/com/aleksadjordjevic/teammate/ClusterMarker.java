@@ -1,11 +1,7 @@
 package com.aleksadjordjevic.teammate;
 
-import android.net.Uri;
-
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
-
-import java.net.URI;
 
 public class ClusterMarker implements ClusterItem
 {
