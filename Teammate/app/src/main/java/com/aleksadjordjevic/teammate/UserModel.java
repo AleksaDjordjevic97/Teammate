@@ -10,7 +10,6 @@ import java.util.List;
 public class UserModel
 {
 
-
     private String username;
     private String profile_image;
     private long numOfPosts;
@@ -19,6 +18,7 @@ public class UserModel
     private List<String> friends;
     private GeoPoint geo_point;
     private @ServerTimestamp Date timestamp;
+    private boolean locationSharing;
 
     public UserModel()
     {
@@ -35,7 +35,7 @@ public class UserModel
         this.friends = new ArrayList<>();
     }
 
-    public UserModel(String username, String profile_image, long numOfPosts, String phone, String email, GeoPoint geo_point, Date timestamp)
+    public UserModel(String username, String profile_image, long numOfPosts, String phone, String email, GeoPoint geo_point, Date timestamp, boolean locationSharing)
     {
         this.username = username;
         this.profile_image = profile_image;
@@ -45,6 +45,7 @@ public class UserModel
         this.friends = new ArrayList<>();
         this.geo_point = geo_point;
         this.timestamp = timestamp;
+        this.locationSharing = locationSharing;
     }
 
     public String getUsername()
@@ -125,5 +126,15 @@ public class UserModel
     public void setTimestamp(Date timestamp)
     {
         this.timestamp = timestamp;
+    }
+
+    public boolean isLocationSharing()
+    {
+        return locationSharing;
+    }
+
+    public void setLocationSharing(boolean locationSharing)
+    {
+        this.locationSharing = locationSharing;
     }
 }

@@ -3,6 +3,7 @@ package com.aleksadjordjevic.teammate;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,9 +15,14 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.Switch;
 import android.widget.TextView;
+
+import com.aleksadjordjevic.teammate.services.LocationService;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.common.internal.Constants;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -59,18 +65,20 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     FirebaseUser user;
     String userID;
     FirebaseFirestore mDatabase;
+    DocumentReference profileRef;
 
     DrawerLayout mDrawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle actionBarDrawerToggle;
     CircleImageView navImage;
     TextView navUsername;
+    Switch locationSwitch;
+    Boolean sendLocation;
 
     private GoogleMap mMap;
     LatLngBounds mMapBoundary;
 
     FusedLocationProviderClient mFusedLocationClient;
-   // UserLocationModel userLocation;
     UserModel userModel;
     List<String> friendsIDList;
     List<UserModel> friendsList;
@@ -86,26 +94,12 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         setContentView(R.layout.activity_index);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//
-//        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-//        NavigationView navigationView = findViewById(R.id.nav_view);
-//        // Passing each menu ID as a set of Ids because each
-//        // menu should be considered as top level destinations.
-//        mAppBarConfiguration = new AppBarConfiguration.Builder(
-//                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
-//                .setDrawerLayout(drawer)
-//                .build();
-//        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-//        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-//        NavigationUI.setupWithNavController(navigationView, navController);
-
         navButton = findViewById(R.id.nav_menuButton);
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         userID = user.getUid();
         mDatabase = FirebaseFirestore.getInstance();
+        profileRef = mDatabase.collection("users").document(userID);
 
 
         navigationView=findViewById(R.id.nav_view);
@@ -116,6 +110,11 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         actionBarDrawerToggle.syncState();
         navImage = navView.findViewById(R.id.nav_ProfileImage);
         navUsername = navView.findViewById(R.id.nav_Username);
+        locationSwitch = navView.findViewById(R.id.nav_locationSwitch);
+        if(locationSwitch.isActivated())
+            sendLocation = true;
+        else
+            sendLocation = false;
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         userModel = new UserModel();
@@ -123,8 +122,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         friendsList = new ArrayList<>();
         mClusterMarkers = new ArrayList<>();
 
-
-        setUserDetails();
+        //setUserDetails();
 
         navButton.setOnClickListener(new View.OnClickListener()
         {
@@ -155,6 +153,44 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
             }
         });
 
+        locationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
+                if(isChecked)
+                {
+                    sendLocation = true;
+                    userModel.setLocationSharing(true);
+                    profileRef.set(userModel).addOnCompleteListener(new OnCompleteListener<Void>()
+                    {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task)
+                        {
+                            if(task.isSuccessful())
+                                startLocationService();
+                        }
+                    });
+
+                }
+                else
+                {
+                    sendLocation = false;
+                    userModel.setLocationSharing(false);
+                    profileRef.set(userModel).addOnCompleteListener(new OnCompleteListener<Void>()
+                    {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task)
+                        {
+                            if(task.isSuccessful())
+                                stopLocationService();
+                        }
+                    });
+
+                }
+            }
+        });
+
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -164,7 +200,6 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
 
     protected void setUserDetails()
     {
-        DocumentReference profileRef = mDatabase.collection("users").document(userID);
 
         profileRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>()
         {
@@ -178,8 +213,13 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
                         .load(userModel.getProfile_image())
                         .placeholder(R.drawable.user)
                         .into(navImage);
+                sendLocation = userModel.isLocationSharing();
+                locationSwitch.setChecked(sendLocation);
 
-                getLastKnownLocation();
+                //getLastKnownLocation();
+                if(sendLocation)
+                    startLocationService();
+
                 getFriendsList();
 
             }
@@ -234,54 +274,50 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
     /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
+        MAP PART
+    */
 
 
-    protected void getLastKnownLocation()
-    {
-        mFusedLocationClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>()
-        {
-            @Override
-            public void onComplete(@NonNull Task<Location> task)
-            {
-                if(task.isSuccessful())
-                {
-                    Location location = task.getResult();
-                    GeoPoint geoPoint = new GeoPoint(location.getLatitude(),location.getLongitude());
-
-                    userModel.setGeo_point(geoPoint);
-                    userModel.setTimestamp(null);
-                    saveUserLocation();
-
-                }
-
-            }
-        });
-    }
-
-    protected void saveUserLocation()
-    {
-        if(userModel != null)
-        {
-            DocumentReference locationRef = mDatabase.collection("users").document(userID);
-            locationRef.set(userModel).addOnCompleteListener(new OnCompleteListener<Void>()
-            {
-                @Override
-                public void onComplete(@NonNull Task<Void> task)
-                {
-
-                    getFriendsList();
-                }
-            });
-        }
-    }
+//    protected void getLastKnownLocation()
+//    {
+//        mFusedLocationClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>()
+//        {
+//            @Override
+//            public void onComplete(@NonNull Task<Location> task)
+//            {
+//                if(task.isSuccessful())
+//                {
+//                    Location location = task.getResult();
+//                    GeoPoint geoPoint = new GeoPoint(location.getLatitude(),location.getLongitude());
+//
+//                    userModel.setGeo_point(geoPoint);
+//                    userModel.setTimestamp(null);
+//                    saveUserLocation();
+//
+//                }
+//
+//            }
+//        });
+//    }
+//
+//    protected void saveUserLocation()
+//    {
+//        if(userModel != null)
+//        {
+//            DocumentReference locationRef = mDatabase.collection("users").document(userID);
+//            locationRef.set(userModel).addOnCompleteListener(new OnCompleteListener<Void>()
+//            {
+//                @Override
+//                public void onComplete(@NonNull Task<Void> task)
+//                {
+//                    if(sendLocation)
+//                        startLocationService();
+//
+//                    getFriendsList();
+//                }
+//            });
+//        }
+//    }
 
 
     protected void getFriendsList()
@@ -296,12 +332,6 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
                UserModel usr = documentSnapshot.toObject(UserModel.class);
                 if(usr.getFriends() != null)
                 {
-//                    List<String> fList = usr.getFriends();
-//                    for(String f:fList)
-//                    {
-//                        if (!friendsIDList.contains(f))
-//                            friendsIDList.add(f);
-//                    }
                     friendsIDList = usr.getFriends();
                     getFriendsLocations();
                 }
@@ -316,15 +346,13 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
 
             DocumentReference friendRef = mDatabase.collection("users").document(fid);
 
-            //UserLocationModel friendLocation = new UserLocationModel();
-
             friendRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>()
             {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot)
                 {
                     UserModel usr = documentSnapshot.toObject(UserModel.class);
-                    if(!friendsList.contains(usr))
+                    if(!friendsList.contains(usr) && usr.isLocationSharing())
                         friendsList.add(usr);
                 }
             });
@@ -457,5 +485,45 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
 
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+    }
+
+
+    private void startLocationService()
+    {
+        if(!isLocationServiceRunning())
+        {
+            Intent serviceIntent = new Intent(this, LocationService.class);
+//        this.startService(serviceIntent);
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
+                IndexActivity.this.startForegroundService(serviceIntent);
+            else
+                startService(serviceIntent);
+        }
+    }
+
+    protected void stopLocationService()
+    {
+//        if(isLocationServiceRunning())
+//        {
+            Intent serviceIntent = new Intent(this, LocationService.class);
+            //this.stopService(serviceIntent);
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
+                getApplicationContext().stopService(serviceIntent);
+            else
+                stopService(serviceIntent);
+        //}
+    }
+
+    private boolean isLocationServiceRunning()
+    {
+        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE))
+        {
+            if("package com.aleksadjordjevic.teammate.services.LocationService".equals(service.service.getClassName()))
+                return true;
+        }
+        return false;
     }
 }
