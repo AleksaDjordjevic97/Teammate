@@ -16,7 +16,7 @@ public class UserModel
     private long numOfPosts;
     private String phone;
     private String email;
-    private List<String> friends;
+    private ArrayList<String> friends;
     private GeoPoint geo_point;
     private @ServerTimestamp Date timestamp;
     private boolean locationSharing;
@@ -111,12 +111,12 @@ public class UserModel
         this.email = email;
     }
 
-    public List<String> getFriends()
+    public ArrayList<String> getFriends()
     {
         return friends;
     }
 
-    public void setFriends(List<String> friends)
+    public void setFriends(ArrayList<String> friends)
     {
         this.friends = friends;
     }

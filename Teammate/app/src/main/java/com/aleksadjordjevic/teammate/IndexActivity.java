@@ -81,17 +81,14 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
 
     private GoogleMap mMap;
     LatLngBounds mMapBoundary;
-
     FusedLocationProviderClient mFusedLocationClient;
-
-    List<String> friendsIDList;
+    ArrayList<String> friendsIDList;
     ArrayList<UserModel> friendsList;
     ClusterManager mClusterManager;
     MyClusterManagerRenderer mClusterManagerRenderer;
     ArrayList<ClusterMarker> mClusterMarkers;
     Handler mHandler = new Handler();
     Runnable mRunnable;
-
 
 
     @Override
@@ -128,8 +125,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         friendsIDList = new ArrayList<>();
         friendsList = new ArrayList<>();
         mClusterMarkers = new ArrayList<>();
-
-        //setUserDetails();
+        
 
         navButton.setOnClickListener(new View.OnClickListener()
         {
@@ -215,9 +211,9 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
     @Override
-    protected void onStop()
+    protected void onDestroy()
     {
-        super.onStop();
+        super.onDestroy();
         stopLocationUpdates();
     }
 
@@ -233,8 +229,6 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
 
         if (sendLocation)
             startLocationService();
-
-       // getFriendsLocations();
     }
 
     @Override
@@ -275,14 +269,10 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
-    /**
-        MAP PART
-    */
-
 
     protected void getFriendsLocations()
     {
-        friendsIDList = userModel.getFriends();
+        friendsIDList = (ArrayList<String>)userModel.getFriends().clone();;
         friendsList.clear();
 
         for (final String fid:friendsIDList)
@@ -410,11 +400,6 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         mMap = googleMap;
         addMyMapMarker();
 
-        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney").icon());
-//       mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback()
         {
             @Override
@@ -422,13 +407,11 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
             {
                 getFriendsLocations();
                 setCameraView();
-                //addMyMapMarker();
             }
         });
 
 
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED)
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             return;
         mMap.setMyLocationEnabled(true);
     }
@@ -474,7 +457,6 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         if(!isLocationServiceRunning())
         {
             Intent serviceIntent = new Intent(this, LocationService.class);
-//        this.startService(serviceIntent);
 
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
                 IndexActivity.this.startForegroundService(serviceIntent);
@@ -485,16 +467,15 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
 
     protected void stopLocationService()
     {
-//        if(isLocationServiceRunning())
-//        {
+        if(isLocationServiceRunning())
+        {
             Intent serviceIntent = new Intent(this, LocationService.class);
-            //this.stopService(serviceIntent);
 
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
                 getApplicationContext().stopService(serviceIntent);
             else
                 stopService(serviceIntent);
-        //}
+        }
     }
 
     private boolean isLocationServiceRunning()
@@ -502,7 +483,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE))
         {
-            if("package com.aleksadjordjevic.teammate.services.LocationService".equals(service.service.getClassName()))
+            if("com.aleksadjordjevic.teammate.services.LocationService".equals(service.service.getClassName()))
                 return true;
         }
         return false;
