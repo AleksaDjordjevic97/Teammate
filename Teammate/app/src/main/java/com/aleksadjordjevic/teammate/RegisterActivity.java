@@ -180,6 +180,7 @@ public class RegisterActivity extends AppCompatActivity
     protected void fillDefault()
     {
         Map<String,Object> userMap = new HashMap<>();
+        userMap.put("userID",user.getUid());
         userMap.put("username","user");
         userMap.put("numOfPosts",0);
         userMap.put("email",user.getEmail());

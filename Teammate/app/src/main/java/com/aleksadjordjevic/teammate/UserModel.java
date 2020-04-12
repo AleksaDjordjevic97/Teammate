@@ -10,6 +10,7 @@ import java.util.List;
 public class UserModel
 {
 
+    private String userID;
     private String username;
     private String profile_image;
     private long numOfPosts;
@@ -25,8 +26,9 @@ public class UserModel
         this.friends = new ArrayList<>();
     }
 
-    public UserModel(String username, String profile_image, long numOfPosts, String phone, String email)
+    public UserModel(String userID,String username, String profile_image, long numOfPosts, String phone, String email)
     {
+        this.userID = userID;
         this.username = username;
         this.profile_image = profile_image;
         this.numOfPosts = numOfPosts;
@@ -37,6 +39,7 @@ public class UserModel
 
     public UserModel(String username, String profile_image, long numOfPosts, String phone, String email, GeoPoint geo_point, Date timestamp, boolean locationSharing)
     {
+        this.userID = userID;
         this.username = username;
         this.profile_image = profile_image;
         this.numOfPosts = numOfPosts;
@@ -46,6 +49,16 @@ public class UserModel
         this.geo_point = geo_point;
         this.timestamp = timestamp;
         this.locationSharing = locationSharing;
+    }
+
+    public String getUserID()
+    {
+        return userID;
+    }
+
+    public void setUserID(String userID)
+    {
+        this.userID = userID;
     }
 
     public String getUsername()

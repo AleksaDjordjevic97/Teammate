@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -59,6 +60,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class IndexActivity extends AppCompatActivity implements OnMapReadyCallback
 {
+    private static final int LOCATION_UPDATE_INTERVAL = 4000;
 
     ImageButton navButton;
     FirebaseAuth mAuth;
@@ -87,6 +89,9 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     ClusterManager mClusterManager;
     MyClusterManagerRenderer mClusterManagerRenderer;
     ArrayList<ClusterMarker> mClusterMarkers;
+    Handler mHandler = new Handler();
+    Runnable mRunnable;
+
 
 
     @Override
@@ -206,8 +211,15 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         super.onResume();
         userModel = ((UserClient)(getApplicationContext())).getUser();
         setUserDetails();
+        startUserLocationsRunnable();
     }
 
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        stopLocationUpdates();
+    }
 
     protected void setUserDetails()
     {
@@ -268,65 +280,6 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     */
 
 
-//    protected void getLastKnownLocation()
-//    {
-//        mFusedLocationClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>()
-//        {
-//            @Override
-//            public void onComplete(@NonNull Task<Location> task)
-//            {
-//                if(task.isSuccessful())
-//                {
-//                    Location location = task.getResult();
-//                    GeoPoint geoPoint = new GeoPoint(location.getLatitude(),location.getLongitude());
-//
-//                    userModel.setGeo_point(geoPoint);
-//                    userModel.setTimestamp(null);
-//                    saveUserLocation();
-//
-//                }
-//
-//            }
-//        });
-//    }
-//
-//    protected void saveUserLocation()
-//    {
-//        if(userModel != null)
-//        {
-//            DocumentReference locationRef = mDatabase.collection("users").document(userID);
-//            locationRef.set(userModel).addOnCompleteListener(new OnCompleteListener<Void>()
-//            {
-//                @Override
-//                public void onComplete(@NonNull Task<Void> task)
-//                {
-//                    if(sendLocation)
-//                        startLocationService();
-//
-//                    getFriendsList();
-//                }
-//            });
-//        }
-//    }
-
-
-//    protected void getFriendsList()
-//    {
-//        profileRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>()
-//        {
-//            @Override
-//            public void onSuccess(DocumentSnapshot documentSnapshot)
-//            {
-//               UserModel usr = documentSnapshot.toObject(UserModel.class);
-//                if(usr.getFriends() != null)
-//                {
-//                    friendsIDList = userModel.getFriends();
-//                    getFriendsLocations();
-//                }
-//            }
-//        });
-//    }
-
     protected void getFriendsLocations()
     {
         friendsIDList = userModel.getFriends();
@@ -372,6 +325,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
                                         new LatLng(topBoundary,rightBoundary));
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mMapBoundary,0));
     }
+
 
     protected void addMyMapMarker()
     {
@@ -455,6 +409,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     {
         mMap = googleMap;
         addMyMapMarker();
+
         // Add a marker in Sydney and move the camera
 //        LatLng sydney = new LatLng(-34, 151);
 //        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney").icon());
@@ -551,5 +506,70 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
                 return true;
         }
         return false;
+    }
+
+
+
+    private void startUserLocationsRunnable()  //Pozovi je negde
+    {
+        mHandler.postDelayed(mRunnable = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                retrieveUserLocations();
+                mHandler.postDelayed(mRunnable, LOCATION_UPDATE_INTERVAL);
+            }
+        }, LOCATION_UPDATE_INTERVAL);
+    }
+
+    private void stopLocationUpdates()
+    {
+        mHandler.removeCallbacks(mRunnable);
+    }
+
+    private void retrieveUserLocations()
+    {
+
+        try
+        {
+            for(final ClusterMarker clusterMarker: mClusterMarkers)
+            {
+
+                DocumentReference userLocationRef = mDatabase.collection("users").document(clusterMarker.getUser().getUserID());
+
+                userLocationRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
+                {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task)
+                    {
+                        if(task.isSuccessful())
+                        {
+
+                            final UserModel updatedUserLocation = task.getResult().toObject(UserModel.class);
+
+                            for (int i = 0; i < mClusterMarkers.size(); i++)
+                            {
+                                try
+                                {
+                                    if (mClusterMarkers.get(i).getUser().getUserID().equals(updatedUserLocation.getUserID()))
+                                    {
+
+                                        LatLng updatedLatLng = new LatLng(updatedUserLocation.getGeo_point().getLatitude(), updatedUserLocation.getGeo_point().getLongitude());
+
+                                        mClusterMarkers.get(i).setPosition(updatedLatLng);
+                                        mClusterManagerRenderer.setUpdateMarker(mClusterMarkers.get(i));
+                                    }
+
+                                } catch (NullPointerException e)
+                                { }
+                            }
+                        }
+                    }
+                });
+            }
+        }catch (IllegalStateException e)
+        { }
+
     }
 }

@@ -54,11 +54,7 @@ public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMark
     @Override
     protected void onBeforeClusterItemRendered(ClusterMarker item, MarkerOptions markerOptions)
     {
-        imageView.setImageResource(R.drawable.listening_on);
-//        Glide.with(cntx.getApplicationContext())
-//                .load(item.getIconPicture())
-//                .placeholder(R.drawable.user)
-//                .into(imageView);
+        imageView.setImageResource(R.drawable.user);
         Bitmap icon = iconGenerator.makeIcon();
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(item.getTitle());
 
@@ -90,5 +86,14 @@ public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMark
     protected boolean shouldRenderAsCluster(Cluster<ClusterMarker> cluster)
     {
         return false;
+    }
+
+    public void setUpdateMarker(ClusterMarker clusterMarker)
+    {
+        Marker marker = getMarker(clusterMarker);
+
+        if (marker != null)
+            marker.setPosition(clusterMarker.getPosition());
+
     }
 }
