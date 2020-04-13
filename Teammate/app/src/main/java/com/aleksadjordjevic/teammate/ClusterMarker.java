@@ -10,19 +10,19 @@ public class ClusterMarker implements ClusterItem
     private String snippet;
 
     private String iconPicture;
-    private UserModel user;
+    private String id;
 
     public ClusterMarker()
     {
     }
 
-    public ClusterMarker(LatLng position, String title, String snippet, String iconPicture, UserModel user)
+    public ClusterMarker(LatLng position, String title, String snippet, String iconPicture, String id)
     {
         this.position = position;
         this.title = title;
         this.snippet = snippet;
         this.iconPicture = iconPicture;
-        this.user = user;
+        this.id = id;
     }
 
 
@@ -69,13 +69,13 @@ public class ClusterMarker implements ClusterItem
         this.iconPicture = iconPicture;
     }
 
-    public UserModel getUser()
+    public String getId()
     {
-        return user;
+        return id;
     }
 
-    public void setUser(UserModel user)
+    public void setId(String id)
     {
-        this.user = user;
+        this.id = id;
     }
 }
