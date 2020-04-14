@@ -15,13 +15,16 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RatingBar;
 import android.widget.Switch;
@@ -30,6 +33,8 @@ import android.widget.Toast;
 
 import com.aleksadjordjevic.teammate.services.LocationService;
 import com.bumptech.glide.Glide;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.common.internal.Constants;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -51,10 +56,13 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -68,6 +76,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.ref.Reference;
 import java.util.ArrayList;
@@ -125,6 +135,8 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     ArrayList<ClusterMarker> mClusterMarkers;
     Handler mHandler = new Handler();
     Runnable mRunnable;
+
+    RecyclerView rcvCourtReviews;
 
 
 
@@ -335,7 +347,6 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(IndexActivity.this);
         View mView = getLayoutInflater().inflate(R.layout.add_court_dialog, null);
         imgCourt = mView.findViewById(R.id.imgCourtDialog);
-        courtRatingD = mView.findViewById(R.id.courtRatingDialog);
         rbtnSoccer = mView.findViewById(R.id.rbtnSoccer);
         rbtnBasketball = mView.findViewById(R.id.rbtnBasketball);
         rbtnTennis = mView.findViewById(R.id.rbtnTennis);
@@ -367,7 +378,6 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
 
                             Location courtLocation = task.getResult();
                             GeoPoint courtGeoPoint = new GeoPoint(courtLocation.getLatitude(), courtLocation.getLongitude());
-                            float courtRating = courtRatingD.getRating();
 
                             if (rbtnSoccer.isChecked())
                                 courtType = "Soccer";
@@ -393,7 +403,6 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
                                 court.setName(courtName);
                                 court.setType(courtType);
                                 court.setPicture(urlCourt);
-                                court.setRating(courtRating);
                                 court.setLocation(courtGeoPoint);
                                 courtRef.document(courtID).set(court).addOnCompleteListener(new OnCompleteListener<Void>()
                                 {
@@ -695,7 +704,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
                 setCameraView();
             }
         });
-        
+
 
         mMap.setOnInfoWindowLongClickListener(new GoogleMap.OnInfoWindowLongClickListener()
         {
@@ -770,9 +779,238 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
 
     }
 
-    protected void showCourtDialog(Marker marker)
+    protected void showCourtDialog(final Marker marker)
     {
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(IndexActivity.this);
+        View mView = getLayoutInflater().inflate(R.layout.marker_court_details, null);
 
+        final CircleImageView imgCourtMC = mView.findViewById(R.id.imgProfileMC);
+        final TextView txtCourtNameMC = mView.findViewById(R.id.txtCourtNameMC);
+        final ImageView imgCourtTypeMC = mView.findViewById(R.id.imgCourtTypeMC);
+        final RatingBar courtRatingMarkerMC = mView.findViewById(R.id.courtRatingMarker);
+        rcvCourtReviews = mView.findViewById(R.id.rcvCourtReviews);
+        final EditText txtReviewMC = mView.findViewById(R.id.txtMarkerReviewMC);
+        final RatingBar courtRatingReviewMC = mView.findViewById(R.id.courtRatingReviewMC);
+        final ImageButton btnReviewMC = mView.findViewById(R.id.btnReviewMC);
+        final Button btnCloseMC = mView.findViewById(R.id.btnCloseMC);
+        LinearLayoutManager mLayoutManager;
+
+        rcvCourtReviews.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(IndexActivity.this);
+        mLayoutManager.setReverseLayout(true);
+        mLayoutManager.setStackFromEnd(true);
+        rcvCourtReviews.setLayoutManager(mLayoutManager);
+
+        int index = marker.getSnippet().indexOf("ID:") + 3;
+        final String cID =  marker.getSnippet().substring(index);
+
+        mBuilder.setView(mView);
+        final AlertDialog dialog = mBuilder.create();
+        dialog.show();
+
+        mDatabase.collection("courts").document(cID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task)
+            {
+                final CourtModel court = task.getResult().toObject(CourtModel.class);
+
+                txtCourtNameMC.setText(court.getName());
+                Glide.with(getApplicationContext())
+                        .load(court.getPicture())
+                        .placeholder(R.drawable.photo_blue)
+                        .into(imgCourtMC);
+
+                if(court.getUserRatings() == null)
+                    courtRatingMarkerMC.setRating(0);
+                else
+                {
+                    float avgRating = calculateAverage(court.getUserRatings());
+                    courtRatingMarkerMC.setRating(avgRating);
+                }
+
+                if(court.getType().equals("Basketball"))
+                    imgCourtTypeMC.setImageResource(R.drawable.basketball);
+                else if(court.getType().equals("Soccer"))
+                    imgCourtTypeMC.setImageResource(R.drawable.soccer);
+                else if(court.getType().equals("Tennis"))
+                    imgCourtTypeMC.setImageResource(R.drawable.tennis);
+                else if(court.getType().equals("Other"))
+                    imgCourtTypeMC.setImageResource(R.drawable.other);
+
+                final ArrayList<String> userReviews = new ArrayList<>();
+
+                if(!court.getReviews().isEmpty())
+                {
+                    for (String ur : court.getReviews().keySet())
+                        userReviews.add(ur);
+
+                    showReviews(userReviews, court.getReviews(), court.getUserRatings());
+                }
+
+                btnReviewMC.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        if(nearCourt(court.getLocation()))
+                        {
+                            if (!txtReviewMC.getText().toString().trim().equals(""))
+                            {
+                                Map<String, Object> reviewMap = new HashMap<>();
+                                Map<String, String> reviewMapText = new HashMap<>();
+                                Map<String, Float> reviewMapRating = new HashMap<>();
+
+                                reviewMapText.put(userModel.getUserID(), txtReviewMC.getText().toString());
+                                reviewMapRating.put(userModel.getUserID(), courtRatingReviewMC.getRating());
+                                reviewMap.put("reviews", reviewMapText);
+                                reviewMap.put("userRatings", reviewMapRating);
+
+                                mDatabase.collection("courts").document(cID).set(reviewMap, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>()
+                                {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task)
+                                    {
+                                        if(!court.getReviews().containsKey(userModel.getUserID()))
+                                        {
+                                            HashMap<String, Object> reviewUpdateMap = new HashMap<>();
+                                            reviewUpdateMap.put("numOfPosts", userModel.getNumOfPosts() + 1);
+                                            profileRef.set(reviewUpdateMap, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>()
+                                            {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task)
+                                                {
+                                                    if (task.isSuccessful())
+                                                    {
+                                                        userModel.setNumOfPosts(userModel.getNumOfPosts() + 1);
+                                                        Toast.makeText(IndexActivity.this, "Review added successfully.", Toast.LENGTH_SHORT).show();
+                                                        showCourtDialog(marker);
+                                                        dialog.dismiss();
+                                                    }
+                                                }
+                                            });
+                                        }
+                                        else
+                                        {
+                                            Toast.makeText(IndexActivity.this, "Review added successfully.", Toast.LENGTH_SHORT).show();
+                                            showCourtDialog(marker);
+                                            dialog.dismiss();
+                                        }
+
+                                    }
+                                });
+                            } else
+                            {
+                                txtReviewMC.setError("Please write a review first.");
+                                txtReviewMC.requestFocus();
+                            }
+                        }
+                        else
+                            Toast.makeText(IndexActivity.this, "You need to be near the court to add a review.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
+                btnCloseMC.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        dialog.dismiss();
+                    }
+                });
+
+
+            }
+        });
+
+    }
+
+    protected float calculateAverage(HashMap<String,Float> userRatings)
+    {
+        ArrayList<Float> urList = new ArrayList<>();
+
+        for(float ur:userRatings.values())
+            urList.add(ur);
+
+        float sum = 0;
+
+        for(float num:urList)
+            sum+=num;
+
+        return sum/urList.size();
+    }
+
+    protected boolean nearCourt(GeoPoint courtGeoPoint)
+    {
+        Location userLocation = new Location("userLocation");
+        userLocation.setLatitude(userModel.getGeo_point().getLatitude());
+        userLocation.setLongitude(userModel.getGeo_point().getLongitude());
+
+        Location courtLocation = new Location("courtLocation");
+        courtLocation.setLatitude(courtGeoPoint.getLatitude());
+        courtLocation.setLongitude(courtGeoPoint.getLongitude());
+
+        float distance = userLocation.distanceTo(courtLocation);
+
+        if(distance > 100.0)
+            return false;
+        else
+            return true;
+
+    }
+
+    protected void showReviews(ArrayList<String> usersList, final HashMap<String,String> userReviews, final HashMap<String, Float> userRatings)
+    {
+        Query showReviews = mDatabase.collection("users").whereIn(FieldPath.documentId(),usersList);
+        FirestoreRecyclerOptions<UserModel> options = new FirestoreRecyclerOptions.Builder<UserModel>()
+                .setQuery(showReviews, UserModel.class)
+                .build();
+
+
+        FirestoreRecyclerAdapter adapter = new FirestoreRecyclerAdapter<UserModel, ReviewViewHolder>(options)
+        {
+            @Override
+            protected void onBindViewHolder(@NonNull ReviewViewHolder holder, int position, @NonNull UserModel model)
+            {
+                holder.username.setText(model.getUsername());
+                Glide.with(IndexActivity.this)
+                        .load(model.getProfile_image())
+                        .placeholder(R.drawable.user)
+                        .into(holder.profileImage);
+                holder.review.setText(userReviews.get(model.getUserID()));
+                holder.rating.setText(userRatings.get(model.getUserID()).toString());
+            }
+
+            @NonNull
+            @Override
+            public ReviewViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+            {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.marker_review_rcv,parent,false);
+                ReviewViewHolder viewHolder = new ReviewViewHolder(view);
+                return viewHolder;
+            }
+        };
+
+        rcvCourtReviews.setAdapter(adapter);
+        adapter.startListening();
+    }
+
+    public static class ReviewViewHolder extends RecyclerView.ViewHolder
+    {
+        TextView username;
+        CircleImageView profileImage;
+        TextView review;
+        TextView rating;
+
+        public ReviewViewHolder(View itemView)
+        {
+            super(itemView);
+            username = itemView.findViewById(R.id.txtUsernameMRCV);
+            profileImage = itemView.findViewById(R.id.imgMRCV);
+            review = itemView.findViewById(R.id.txtUserReviewMRCV);
+            rating = itemView.findViewById(R.id.txtNumOfStarsMRCV);
+        }
     }
 
 

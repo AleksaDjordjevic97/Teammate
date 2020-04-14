@@ -2,6 +2,8 @@ package com.aleksadjordjevic.teammate;
 
 import com.google.firebase.firestore.GeoPoint;
 
+import java.util.HashMap;
+
 public class CourtModel
 {
 
@@ -9,21 +11,25 @@ public class CourtModel
     private String name;
     private String picture;
     private String type;
-    private float rating;
     private GeoPoint location;
+    private HashMap<String,String> reviews;
+    private HashMap<String,Float> userRatings;
 
     public CourtModel()
     {
     }
 
-    public CourtModel(String courtID, String name, String picture, String type, float rating, GeoPoint location)
+    public CourtModel(String courtID, String name, String picture, String type, GeoPoint location, HashMap<String, String> reviews, HashMap<String, Float> userRatings)
     {
         this.courtID = courtID;
         this.name = name;
         this.picture = picture;
         this.type = type;
-        this.rating = rating;
         this.location = location;
+        reviews = new HashMap<String,String>();
+        userRatings = new HashMap<String,Float>();
+        this.reviews = reviews;
+        this.userRatings = userRatings;
     }
 
     public String getCourtID()
@@ -66,15 +72,6 @@ public class CourtModel
         this.type = type;
     }
 
-    public float getRating()
-    {
-        return rating;
-    }
-
-    public void setRating(float rating)
-    {
-        this.rating = rating;
-    }
 
     public GeoPoint getLocation()
     {
@@ -84,5 +81,25 @@ public class CourtModel
     public void setLocation(GeoPoint location)
     {
         this.location = location;
+    }
+
+    public HashMap<String, String> getReviews()
+    {
+        return reviews;
+    }
+
+    public void setReviews(HashMap<String, String> reviews)
+    {
+        this.reviews = reviews;
+    }
+
+    public HashMap<String, Float> getUserRatings()
+    {
+        return userRatings;
+    }
+
+    public void setUserRatings(HashMap<String, Float> userRatings)
+    {
+        this.userRatings = userRatings;
     }
 }

@@ -73,7 +73,7 @@ public class RangActivity extends AppCompatActivity
 
     protected void showRang()
     {
-        Query showRang = mDatabase.collection("users");//.orderBy("numOfPosts",Query.Direction.DESCENDING);
+        Query showRang = mDatabase.collection("users").orderBy("numOfPosts",Query.Direction.ASCENDING);
 
         FirestoreRecyclerOptions<UserModel> options = new FirestoreRecyclerOptions.Builder<UserModel>()
                .setQuery(showRang, UserModel.class)

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <RelativeLayout
+            android:id="@+id/layoutImageMC"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="30dp"
+                android:paddingLeft="15dp">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/imgProfileMC"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:layout_centerHorizontal="true"
+                    android:src="@drawable/photo_blue" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/txtCourtNameMC"
+                            android:layout_width="170dp"
+                            android:layout_height="wrap_content"
+                            android:text="Court Name"
+                            android:textColor="#FFFFFF"
+                            android:padding="10dp"
+                            android:background="@drawable/btn_round"
+                            android:textSize="20dp"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginRight="10dp"/>
+
+                        <ImageView
+                            android:id="@+id/imgCourtTypeMC"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/other"/>
+                    </LinearLayout>
+
+
+                    <RatingBar
+                        android:id="@+id/courtRatingMarker"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:numStars="5"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginLeft="5dp"
+                        android:isIndicator="true"/>
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/layoutReviewsMC"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutImageMC"
+            android:layout_marginTop="30dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcvCourtReviews"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutWriteReviewMC"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutReviewsMC"
+            android:layout_marginTop="50dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RatingBar
+                    android:id="@+id/courtRatingReviewMC"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"/>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/txtMarkerReviewMC"
+                        android:layout_width="300dp"
+                        android:layout_height="50dp"
+                        android:background="@drawable/edit_text"
+                        android:hint="Write a review"
+                        android:singleLine="false"
+                        android:layout_marginLeft="20dp"/>
+
+                    <ImageButton
+                        android:id="@+id/btnReviewMC"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/send"
+                        android:background="@color/fui_transparent"
+                        android:layout_marginLeft="10dp"/>
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutCloseMC"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutWriteReviewMC"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="30dp">
+
+            <Button
+                android:id="@+id/btnCloseMC"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/btn_round"
+                android:textColor="#FFFFFF"
+                android:textSize="20dp"
+                android:text="Close"/>
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>
