@@ -60,6 +60,7 @@ public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMark
 
         markerOptions.title(item.getTitle());
         markerOptions.snippet(item.getSnippet());
+
     }
 
     @Override
@@ -95,5 +96,11 @@ public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMark
         if (marker != null)
             marker.setPosition(clusterMarker.getPosition());
 
+    }
+
+    @Override
+    public void setOnClusterInfoWindowClickListener(ClusterManager.OnClusterInfoWindowClickListener<ClusterMarker> listener)
+    {
+        super.setOnClusterInfoWindowClickListener(listener);
     }
 }

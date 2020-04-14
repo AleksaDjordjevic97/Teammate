@@ -39,6 +39,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -124,6 +125,8 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     ArrayList<ClusterMarker> mClusterMarkers;
     Handler mHandler = new Handler();
     Runnable mRunnable;
+
+
 
 
     @Override
@@ -561,8 +564,8 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
 
             try
             {
-                String snippet = "Email: " + userModel.getEmail() + "\n"
-                        +" Number of posts: " + userModel.getNumOfPosts();
+                String snippet = "Click here to see user details. " +"\n"
+                        + "ID:" + userModel.getUserID();
 
 
                 ClusterMarker myClusterMarker = new ClusterMarker(
@@ -601,13 +604,14 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
             {
                 try
                 {
-                    String snippet2 = "Email: " + userLocation.getEmail() + "\n"
-                            +"Number of posts: " + userLocation.getNumOfPosts();
+                    String snippet = "Click here to see user details. " +"\n"
+                            + "ID:" + userLocation.getUserID();
+
 
                     ClusterMarker friendClusterMarker = new ClusterMarker(
                             new LatLng(userLocation.getGeo_point().getLatitude(),userLocation.getGeo_point().getLongitude()),
                             userLocation.getUsername(),
-                            snippet2,
+                            snippet,
                             userLocation.getProfile_image(),
                             userLocation.getUserID()
                     );
@@ -641,13 +645,13 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
             {
                 try
                 {
-                    String snippet2 = "Type: " + cortLocation.getType() + "\n"
-                            +"Rating: " + cortLocation.getRating();
+                    String snippet = "Click here to see court details. " +"\n"
+                                    + "ID:" + cortLocation.getCourtID();
 
                     ClusterMarker courtClusterMarker = new ClusterMarker(
                             new LatLng(cortLocation.getLocation().getLatitude(),cortLocation.getLocation().getLongitude()),
                             cortLocation.getName(),
-                            snippet2,
+                            snippet,
                             cortLocation.getPicture(),
                             cortLocation.getCourtID()
                     );
@@ -691,11 +695,84 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
                 setCameraView();
             }
         });
+        
+
+        mMap.setOnInfoWindowLongClickListener(new GoogleMap.OnInfoWindowLongClickListener()
+        {
+            @Override
+            public void onInfoWindowLongClick(Marker marker)
+            {
+                if(marker.getSnippet().startsWith("Click here to see user details."))
+                    showUserDialog(marker);
+                else if(marker.getSnippet().startsWith("Click here to see court details."))
+                    showCourtDialog(marker);
+            }
+        });
 
 
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             return;
         mMap.setMyLocationEnabled(true);
+    }
+
+    protected void showUserDialog(Marker marker)
+    {
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(IndexActivity.this);
+        View mView = getLayoutInflater().inflate(R.layout.marker_user_details, null);
+
+        final CircleImageView imgUserMU = mView.findViewById(R.id.imgProfileMU);
+        final TextView txtUsernameMU = mView.findViewById(R.id.txtUsernameMU);
+        final TextView txtEmailMU = mView.findViewById(R.id.txtEmailMU);
+        final TextView txtPhoneMU = mView.findViewById(R.id.txtPhoneMU);
+        final TextView txtNumOfPostsMU = mView.findViewById(R.id.txtNumOfPostsMU);
+        final Button btnCloseMU = mView.findViewById(R.id.btnCloseMU);
+
+        int index = marker.getSnippet().indexOf("ID:") + 3;
+        String uID =  marker.getSnippet().substring(index);
+
+        mBuilder.setView(mView);
+        final AlertDialog dialog = mBuilder.create();
+        dialog.show();
+
+       mDatabase.collection("users").document(uID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task)
+            {
+                if(task.isSuccessful())
+                {
+                    UserModel userMarker = task.getResult().toObject(UserModel.class);
+
+                    txtUsernameMU.setText(userMarker.getUsername());
+                    txtEmailMU.setText(userMarker.getEmail());
+                    txtPhoneMU.setText(userMarker.getPhone());
+                    txtNumOfPostsMU.setText(String.valueOf(userMarker.getNumOfPosts()));
+                    Glide.with(getApplicationContext())
+                            .load(userMarker.getProfile_image())
+                            .placeholder(R.drawable.user)
+                            .into(imgUserMU);
+
+                    btnCloseMU.setOnClickListener(new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            dialog.dismiss();
+                        }
+                    });
+
+                }
+            }
+        });
+
+
+
+
+    }
+
+    protected void showCourtDialog(Marker marker)
+    {
+
     }
 
 

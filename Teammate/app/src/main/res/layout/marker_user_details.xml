@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <RelativeLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <RelativeLayout
+            android:id="@+id/layoutImageMU"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="30dp"
+                android:paddingLeft="15dp">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/imgProfileMU"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:layout_centerHorizontal="true"
+                    android:src="@drawable/user" />
+
+                <TextView
+                    android:id="@+id/txtUsernameMU"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Username"
+                    android:textColor="#FFFFFF"
+                    android:padding="10dp"
+                    android:background="@drawable/btn_round"
+                    android:textSize="30dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="10dp"/>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutInfoMU"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutImageMU"
+            android:layout_marginTop="60dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_centerHorizontal="true">
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/email"
+                        android:layout_marginRight="10dp"/>
+
+                    <TextView
+                        android:id="@+id/txtEmailMU"
+                        android:layout_width="250dp"
+                        android:layout_height="50dp"
+                        android:background="@drawable/edit_text"
+                        android:singleLine="true"
+                        android:layout_marginBottom="35dp"
+                        android:textSize="15dp"
+                        android:textColor="#000000"
+                        android:textAlignment="center"
+                        android:padding="10dp"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/phone"
+                        android:layout_marginRight="10dp"/>
+
+                    <TextView
+                        android:id="@+id/txtPhoneMU"
+                        android:layout_width="250dp"
+                        android:layout_height="50dp"
+                        android:background="@drawable/edit_text"
+                        android:singleLine="true"
+                        android:layout_marginBottom="35dp"
+                        android:textSize="15dp"
+                        android:textColor="#000000"
+                        android:textAlignment="center"
+                        android:padding="10dp"/>
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/posts"
+                        android:layout_marginRight="10dp"/>
+
+                    <TextView
+                        android:id="@+id/txtNumOfPostsMU"
+                        android:layout_width="250dp"
+                        android:layout_height="50dp"
+                        android:background="@drawable/edit_text"
+                        android:singleLine="true"
+                        android:layout_marginBottom="35dp"
+                        android:textSize="15dp"
+                        android:textColor="#000000"
+                        android:textAlignment="center"
+                        android:padding="10dp"/>
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutButtonMU"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutInfoMU"
+            android:layout_marginBottom="20dp">
+
+            <Button
+                android:id="@+id/btnCloseMU"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/btn_round"
+                android:textColor="#FFFFFF"
+                android:textSize="20dp"
+                android:text="Close"/>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>
