@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="15dp"
+    android:background="@drawable/edit_text"
+    android:orientation="horizontal">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/imgSCRCV"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:padding="5dp"
+        android:src="@drawable/user"/>
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtCourtNameSCRCV"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:text="Court Name"
+            android:textAlignment="textStart"
+            android:textColor="#000000"
+            android:textSize="20dp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/txtCourtTypeSCRCV"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+
+            android:layout_marginLeft="10dp"
+            android:text="Type"
+            android:textAlignment="textStart"
+            android:textColor="#000000"
+            android:textSize="15dp" />
+
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageButton
+            android:id="@+id/btnPinpointSCRCV"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_marginTop="15dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:src="@drawable/pinpoint"
+            android:background="@color/fui_transparent"/>
+
+    </RelativeLayout>
+
+
+
+
+
+</LinearLayout>

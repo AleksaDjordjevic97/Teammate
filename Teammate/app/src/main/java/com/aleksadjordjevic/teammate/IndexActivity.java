@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -91,9 +93,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class IndexActivity extends AppCompatActivity implements OnMapReadyCallback
 {
     private static final int LOCATION_UPDATE_INTERVAL = 4000;
+    private static final double WGS84_RADIUS = 6370997.0;
+    private static double EarthCircumFence = 2* WGS84_RADIUS * Math.PI;
 
     ImageButton navButton;
     FloatingActionButton fbtnAddCourt;
+    FloatingActionButton fbtnSearch;
     ProgressDialog mDialog;
     FirebaseAuth mAuth;
     FirebaseUser user;
@@ -137,6 +142,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     Runnable mRunnable;
 
     RecyclerView rcvCourtReviews;
+    RecyclerView rcvSearchResults;
 
 
 
@@ -150,6 +156,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
 
         navButton = findViewById(R.id.nav_menuButton);
         fbtnAddCourt = findViewById(R.id.fbtnAddCourt);
+        fbtnSearch = findViewById(R.id.fbtnSearch);
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         userID = user.getUid();
@@ -258,6 +265,15 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
             }
         });
 
+        fbtnSearch.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                showSearchDialog();
+            }
+        });
+
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -295,11 +311,12 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
             startLocationService();
     }
 
-    /**
-     * NAVIGATION DRAWER PART
-     **/
+
+     //////////////////////////////////// NAVIGATION DRAWER PART //////////////////////////////////////////////
 
 
+
+    //region NAVIGATION DRAWER
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -337,11 +354,11 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
 
         }
     }
+    //endregion
 
-    /**
-     * ADD COURT DIALOG PART
-     **/
+    //////////////////////////////////// ADD COURT DIALOG //////////////////////////////////////////////
 
+    //region ADD COURT
     protected void addCourt()
     {
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(IndexActivity.this);
@@ -490,11 +507,11 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
                 Toast.makeText(IndexActivity.this, "There was an error. Try again later.", Toast.LENGTH_SHORT).show();
         }
     }
+    //endregion
 
-    /**
-     * MAP PART
-     **/
+    //////////////////////////////////// GET LOCATIONS PART //////////////////////////////////////////////
 
+    //region GET LOCATIONS
     protected void getFriendsLocations()
     {
         friendsIDList = (ArrayList<String>) userModel.getFriends().clone();
@@ -552,11 +569,12 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
             }
         });
     }
+    //endregion
 
 
+    //////////////////////////////////// ADD MARKERS PART //////////////////////////////////////////////
 
-
-
+    //region ADD MARKERS
     protected void addMyMapMarker()
     {
 
@@ -675,17 +693,39 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
 
         }
     }
+    //endregion
 
-    protected void setCameraView()
+    //////////////////////////////////// MAP PART //////////////////////////////////////////////
+
+    //region MAP
+
+
+    protected void setUserCameraView(UserModel model)
     {
-        double bottomBoundary = userModel.getGeo_point().getLatitude() - .1;
-        double leftBoundary = userModel.getGeo_point().getLongitude() - .1;
-        double topBoundary = userModel.getGeo_point().getLatitude() + .1;
-        double rightBoundary = userModel.getGeo_point().getLongitude() + .1;
 
-        mMapBoundary = new LatLngBounds(new LatLng(bottomBoundary,leftBoundary),
-                new LatLng(topBoundary,rightBoundary));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mMapBoundary,0));
+        double bottomBoundary = model.getGeo_point().getLatitude() - .1;
+        double leftBoundary = model.getGeo_point().getLongitude() - .1;
+        double topBoundary = model.getGeo_point().getLatitude() + .1;
+        double rightBoundary = model.getGeo_point().getLongitude() + .1;
+
+
+        mMapBoundary = new LatLngBounds(new LatLng(bottomBoundary, leftBoundary),
+                new LatLng(topBoundary, rightBoundary));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mMapBoundary, 0));
+    }
+
+    protected void setCourtCameraView(CourtModel model)
+    {
+
+        double bottomBoundary = model.getLocation().getLatitude() - .1;
+        double leftBoundary = model.getLocation().getLongitude() - .1;
+        double topBoundary = model.getLocation().getLatitude() + .1;
+        double rightBoundary = model.getLocation().getLongitude() + .1;
+
+
+        mMapBoundary = new LatLngBounds(new LatLng(bottomBoundary, leftBoundary),
+                new LatLng(topBoundary, rightBoundary));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mMapBoundary, 0));
     }
 
     @Override
@@ -701,7 +741,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
             {
                 getFriendsLocations();
                 getCourtLocations();
-                setCameraView();
+                setUserCameraView(userModel);
             }
         });
 
@@ -723,7 +763,11 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
             return;
         mMap.setMyLocationEnabled(true);
     }
+    //endregion
 
+    //////////////////////////////////// SHOW USER DIALOG PART //////////////////////////////////////////////
+
+    //region SHOW USER DIALOG
     protected void showUserDialog(Marker marker)
     {
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(IndexActivity.this);
@@ -778,7 +822,11 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
 
 
     }
+    //endregion
 
+    //////////////////////////////////// SHOW COURT DIALOG PART //////////////////////////////////////////////
+
+    //region SHOW COURT DIALOG
     protected void showCourtDialog(final Marker marker)
     {
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(IndexActivity.this);
@@ -1012,8 +1060,328 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
             rating = itemView.findViewById(R.id.txtNumOfStarsMRCV);
         }
     }
+    //endregion
+
+    //////////////////////////////////// SHOW SEARCH DIALOG PART //////////////////////////////////////////////
+
+    //region SHOW SEARCH DIALOG
+    protected void showSearchDialog()
+    {
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(IndexActivity.this);
+        View mView = getLayoutInflater().inflate(R.layout.search_dialog, null);
+
+        final EditText txtSearchSD = mView.findViewById(R.id.txtSearchSD);
+        ImageButton btnSearchSD = mView.findViewById(R.id.btnSearchSD);
+        final RadioButton radioPersonSD = mView.findViewById(R.id.radioPersonSD);
+        final RadioButton radioCourtSD = mView.findViewById(R.id.radioCourtSD);
+        final CheckBox checkBasketballSD = mView.findViewById(R.id.checkBasketballSD);
+        final CheckBox checkSoccerSD = mView.findViewById(R.id.checkSoccerSD);
+        final CheckBox checkTennisSD = mView.findViewById(R.id.checkTennisSD);
+        final CheckBox checkOtherSD = mView.findViewById(R.id.checkOtherSD);
+        final EditText txtRadiusSD = mView.findViewById(R.id.txtRadiusSD);
+        rcvSearchResults = mView.findViewById(R.id.rcvSearchResults);
+        Button btnCloseSD = mView.findViewById(R.id.btnCloseSD);
+
+        LinearLayoutManager mLayoutManager;
+        rcvSearchResults.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(IndexActivity.this);
+        mLayoutManager.setReverseLayout(true);
+        mLayoutManager.setStackFromEnd(true);
+        rcvSearchResults.setLayoutManager(mLayoutManager);
 
 
+
+        radioCourtSD.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
+                if(isChecked)
+                {
+                    checkBasketballSD.setClickable(true);
+                    checkSoccerSD.setClickable(true);
+                    checkTennisSD.setClickable(true);
+                    checkOtherSD.setClickable(true);
+                }
+                else
+                {
+                    checkBasketballSD.setClickable(false);
+                    checkBasketballSD.setChecked(false);
+                    checkSoccerSD.setClickable(false);
+                    checkSoccerSD.setChecked(false);
+                    checkTennisSD.setClickable(false);
+                    checkTennisSD.setChecked(false);
+                    checkOtherSD.setClickable(false);
+                    checkOtherSD.setChecked(false);
+                }
+            }
+        });
+
+        mBuilder.setView(mView);
+        final AlertDialog dialog = mBuilder.create();
+        dialog.show();
+
+        btnSearchSD.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+
+                int radius;
+                boolean searchRadius;
+
+                if(radioPersonSD.isChecked())
+                {
+
+                    if(txtRadiusSD.getText().toString().trim().equals(""))
+                    {
+                        searchRadius = false;
+                        searchUsers(searchRadius,0,txtSearchSD.getText().toString().trim(), dialog);
+                    }
+                    else
+                    {
+                        searchRadius = true;
+                        radius = Integer.parseInt(txtRadiusSD.getText().toString().trim());
+                        searchUsers(searchRadius,radius,txtSearchSD.getText().toString().trim(), dialog);
+                    }
+
+                }
+                else if(radioCourtSD.isChecked())
+                {
+                    ArrayList<String> types = new ArrayList<>();
+                    boolean searchTypes;
+
+                    if(checkBasketballSD.isChecked())
+                        types.add("Basketball");
+
+                    if(checkSoccerSD.isChecked())
+                        types.add("Soccer");
+
+                    if(checkTennisSD.isChecked())
+                        types.add("Tennis");
+
+                    if(checkOtherSD.isChecked())
+                        types.add("Other");
+
+                    if(types.isEmpty())
+                        searchTypes = false;
+                    else
+                        searchTypes = true;
+
+                    if(txtRadiusSD.getText().toString().trim().equals(""))
+                    {
+                        searchRadius = false;
+                        searchCourts(searchTypes,types,searchRadius,0,txtSearchSD.getText().toString().trim(),dialog);
+                    }
+                    else
+                    {
+                        searchRadius = true;
+                        radius = Integer.parseInt(txtRadiusSD.getText().toString().trim());
+                        searchCourts(searchTypes,types,searchRadius,radius,txtSearchSD.getText().toString().trim(),dialog);
+                    }
+
+                }
+            }
+        });
+
+
+
+        btnCloseSD.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                dialog.dismiss();
+            }
+        });
+    }
+
+
+    protected void searchUsers(boolean searchRadius, int radius, String name, final AlertDialog dialog)
+    {
+        Query showUserSearch;
+       // GeoPoint inRadius = new GeoPoint(userModel.getGeo_point().getLatitude(),userModel.getGeo_point().getLongitude());
+
+        if(searchRadius)
+        {
+            showUserSearch = mDatabase.collection("users").orderBy("username")                      //napravi za distancu
+                    .startAt(name).endAt(name + "\uf8ff");
+        }
+        else
+        {
+            showUserSearch = mDatabase.collection("users").orderBy("username")
+                    .startAt(name).endAt(name + "\uf8ff");
+        }
+
+        FirestoreRecyclerOptions<UserModel> options = new FirestoreRecyclerOptions.Builder<UserModel>()
+                .setQuery(showUserSearch, UserModel.class)
+                .build();
+
+
+        FirestoreRecyclerAdapter adapter = new FirestoreRecyclerAdapter<UserModel, UserSearchViewHolder>(options)
+        {
+            @Override
+            protected void onBindViewHolder(@NonNull final UserSearchViewHolder holder, int position, @NonNull final UserModel model)
+            {
+                holder.username.setText(model.getUsername());
+                Glide.with(IndexActivity.this)
+                        .load(model.getProfile_image())
+                        .placeholder(R.drawable.user)
+                        .into(holder.profileImage);
+
+                holder.btnPinpoint.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        setUserCameraView(model);
+                        dialog.dismiss();
+                    }
+                });
+            }
+
+            @NonNull
+            @Override
+            public UserSearchViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+            {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_user_rcv,parent,false);
+                UserSearchViewHolder viewHolder = new UserSearchViewHolder(view);
+                return viewHolder;
+            }
+        };
+
+        rcvSearchResults.setAdapter(adapter);
+        adapter.startListening();
+    }
+
+    public static class UserSearchViewHolder extends RecyclerView.ViewHolder
+    {
+        TextView username;
+        CircleImageView profileImage;
+        ImageButton btnPinpoint;
+
+        public UserSearchViewHolder(View itemView)
+        {
+            super(itemView);
+            username = itemView.findViewById(R.id.txtUsernameSURCV);
+            profileImage = itemView.findViewById(R.id.imgSURCV);
+            btnPinpoint = itemView.findViewById(R.id.btnPinpointSURCV);
+        }
+    }
+
+//    protected float calculateDistance(GeoPoint gp)
+//    {
+//        Location userLocation = new Location("userLocation");
+//        userLocation.setLatitude(userModel.getGeo_point().getLatitude());
+//        userLocation.setLongitude(userModel.getGeo_point().getLongitude());
+//
+//        Location otherLocation = new Location("otherLocation");
+//        otherLocation.setLatitude(gp.getLatitude());
+//        otherLocation.setLongitude(gp.getLongitude());
+//
+//        float distance = userLocation.distanceTo(otherLocation);
+//
+//        return distance;
+//    }
+//
+//    private static GeoPoint getNewGeoPoint(GeoPoint sourcePosition, double mEastWest, double mNorthSouth)
+//    {
+//        double degreesPerMeterForLat = EarthCircumFence/360.0;
+//        double shrinkFactor = Math.cos((sourcePosition.getLatitude()*Math.PI/180));
+//        double degreesPerMeterForLon = degreesPerMeterForLat * shrinkFactor;
+//        double newLat = sourcePosition.getLatitude() + mNorthSouth * (1/degreesPerMeterForLat);
+//        double newLng = sourcePosition.getLongitude() + mEastWest * (1/degreesPerMeterForLon);
+//        return new GeoPoint(newLat, newLng);
+//    }
+
+    protected void searchCourts(boolean searchTypes, ArrayList<String> types, boolean searchRadius, int radius, String name, final AlertDialog dialog)
+    {
+        Query showCourtSearch;
+
+        if(searchRadius)
+        {
+            if(searchTypes)                                                                                 //napravi za distancu
+                showCourtSearch = mDatabase.collection("courts").orderBy("name")
+                        .startAt(name).endAt(name + "\uf8ff").whereIn("type",types);
+            else
+                showCourtSearch = mDatabase.collection("courts").orderBy("name")
+                        .startAt(name).endAt(name + "\uf8ff");
+
+        }
+        else
+        {
+            if(searchTypes)
+                showCourtSearch = mDatabase.collection("courts").orderBy("name")
+                        .startAt(name).endAt(name + "\uf8ff").whereIn("type",types);
+            else
+                showCourtSearch = mDatabase.collection("courts").orderBy("name")
+                        .startAt(name).endAt(name + "\uf8ff");
+        }
+
+        FirestoreRecyclerOptions<CourtModel> options = new FirestoreRecyclerOptions.Builder<CourtModel>()
+                .setQuery(showCourtSearch, CourtModel.class)
+                .build();
+
+
+        FirestoreRecyclerAdapter adapter = new FirestoreRecyclerAdapter<CourtModel, CourtSearchViewHolder>(options)
+        {
+            @Override
+            protected void onBindViewHolder(@NonNull CourtSearchViewHolder holder, int position, @NonNull final CourtModel model)
+            {
+                holder.name.setText(model.getName());
+                Glide.with(IndexActivity.this)
+                        .load(model.getPicture())
+                        .placeholder(R.drawable.user)
+                        .into(holder.courtImage);
+                holder.type.setText(model.getType());
+
+                holder.btnPinpoint.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        setCourtCameraView(model);
+                        dialog.dismiss();
+                    }
+                });
+            }
+
+            @NonNull
+            @Override
+            public CourtSearchViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+            {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_court_rcv,parent,false);
+                CourtSearchViewHolder viewHolder = new CourtSearchViewHolder(view);
+                return viewHolder;
+            }
+        };
+
+        rcvSearchResults.setAdapter(adapter);
+        adapter.startListening();
+    }
+
+    public static class CourtSearchViewHolder extends RecyclerView.ViewHolder
+    {
+        TextView name;
+        TextView type;
+        CircleImageView courtImage;
+        ImageButton btnPinpoint;
+
+        public CourtSearchViewHolder(View itemView)
+        {
+            super(itemView);
+            name = itemView.findViewById(R.id.txtCourtNameSCRCV);
+            type = itemView.findViewById(R.id.txtCourtTypeSCRCV);
+            courtImage = itemView.findViewById(R.id.imgSCRCV);
+            btnPinpoint = itemView.findViewById(R.id.btnPinpointSCRCV);
+        }
+    }
+    //endregion
+
+
+    //////////////////////////////////// BACK BUTTON PART //////////////////////////////////////////////
+
+    //region BACK BUTTON
     @Override
     public void onBackPressed()
     {
@@ -1047,8 +1415,11 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
+    //endregion
 
+    //////////////////////////////////// LOCATION SERVICE PART //////////////////////////////////////////////
 
+    //region LOCATION SERVICE
     private void startLocationService()
     {
         if(!isLocationServiceRunning())
@@ -1150,4 +1521,5 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         { }
 
     }
+    //endregion
 }

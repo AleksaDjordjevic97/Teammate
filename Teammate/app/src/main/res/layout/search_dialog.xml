@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <RelativeLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <RelativeLayout
+            android:id="@+id/layoutTextSD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Search"
+                android:textSize="30dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:textColor="#000000"/>
+
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/layoutUnderlineSD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutTextSD">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/underline"/>
+
+        </RelativeLayout>
+
+
+       <RelativeLayout
+           android:id="@+id/layoutSearchSD"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_below="@+id/layoutUnderlineSD"
+           android:layout_marginTop="30dp">
+
+
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:orientation="horizontal">
+
+               <EditText
+                   android:id="@+id/txtSearchSD"
+                   android:layout_width="300dp"
+                   android:layout_height="50dp"
+                   android:layout_marginLeft="20dp"
+                   android:background="@drawable/edit_text"
+                   android:hint="Search..."
+                   android:singleLine="false" />
+
+               <ImageButton
+                   android:id="@+id/btnSearchSD"
+                   android:layout_width="50dp"
+                   android:layout_height="50dp"
+                   android:src="@drawable/search_red"
+                   android:background="@color/fui_transparent"
+                   android:layout_marginLeft="10dp"/>
+           </LinearLayout>
+
+       </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutSearchTypeSD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutSearchSD"
+            android:layout_marginTop="10dp">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginLeft="10dp">
+
+
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/person"/>
+
+
+                <RadioButton
+                    android:id="@+id/radioPersonSD"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:checked="true"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/court"/>
+
+                <RadioButton
+                    android:id="@+id/radioCourtSD"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginLeft="10dp"/>
+
+                </RadioGroup>
+
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutAdditionalTextSD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutSearchTypeSD">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Additional fields"
+                android:textSize="18dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:textColor="#000000"/>
+
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/layoutUnderline2SD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutAdditionalTextSD">
+
+            <ImageView
+                android:layout_width="130dp"
+                android:layout_height="5dp"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/underline"/>
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/layoutAdditionalFieldsSD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layoutUnderline2SD"
+            android:layout_marginTop="15dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="10dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/basketball"/>
+
+                    <CheckBox
+                        android:id="@+id/checkBasketballSD"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:clickable="false"/>
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/soccer"/>
+
+                    <CheckBox
+                        android:id="@+id/checkSoccerSD"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:clickable="false"/>
+
+                    <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:src="@drawable/tennis"
+                        android:layout_marginBottom="5dp"/>
+
+                    <CheckBox
+                        android:id="@+id/checkTennisSD"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:clickable="false"/>
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/other"
+                        android:layout_marginTop="5dp"/>
+
+                    <CheckBox
+                        android:id="@+id/checkOtherSD"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:clickable="false" />
+
+
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:id="@+id/layoutUnderline3SD"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="5dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:src="@drawable/underline"/>
+
+                </RelativeLayout>
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="10dp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/distance"/>
+
+                    <EditText
+                        android:id="@+id/txtRadiusSD"
+                        android:layout_width="100dp"
+                        android:layout_height="30dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/edit_text"
+                        android:inputType="number"
+                        android:singleLine="false" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/meter"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="15dp"/>
+
+
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:id="@+id/layoutUnderline4SD"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="5dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:src="@drawable/underline"/>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutSearchResultsSD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutAdditionalFieldsSD">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcvSearchResults"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"/>
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/layoutCloseSD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutSearchResultsSD"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp">
+
+            <Button
+                android:id="@+id/btnCloseSD"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/btn_round"
+                android:textColor="#FFFFFF"
+                android:textSize="20dp"
+                android:text="Close"/>
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>
