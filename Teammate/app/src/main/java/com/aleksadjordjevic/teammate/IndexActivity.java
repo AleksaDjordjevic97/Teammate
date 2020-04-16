@@ -99,6 +99,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     ImageButton navButton;
     FloatingActionButton fbtnAddCourt;
     FloatingActionButton fbtnSearch;
+    FloatingActionButton fbtnFilter;
     ProgressDialog mDialog;
     FirebaseAuth mAuth;
     FirebaseUser user;
@@ -119,7 +120,6 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     Boolean sendLocation;
 
     CircleImageView imgCourt;
-    RatingBar courtRatingD;
     RadioButton rbtnSoccer;
     RadioButton rbtnBasketball;
     RadioButton rbtnTennis;
@@ -144,6 +144,13 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     RecyclerView rcvCourtReviews;
     RecyclerView rcvSearchResults;
 
+    boolean personFilter;
+    boolean courtFilter;
+    boolean basketballFilter;
+    boolean soccerFilter;
+    boolean tennisFilter;
+    boolean otherFilter;
+
 
 
 
@@ -157,6 +164,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         navButton = findViewById(R.id.nav_menuButton);
         fbtnAddCourt = findViewById(R.id.fbtnAddCourt);
         fbtnSearch = findViewById(R.id.fbtnSearch);
+        fbtnFilter = findViewById(R.id.fbtnFilter);
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         userID = user.getUid();
@@ -164,6 +172,13 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         profileRef = mDatabase.collection("users").document(userID);
         courtRef = mDatabase.collection("courts");
         mStorage = FirebaseStorage.getInstance().getReference().child("court_images");
+
+        personFilter = true;
+        courtFilter = true;
+        basketballFilter = true;
+        soccerFilter = true;
+        tennisFilter = true;
+        otherFilter = true;
 
         userModel = ((UserClient) (getApplicationContext())).getUser();
 
@@ -274,6 +289,15 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
             }
         });
 
+        fbtnFilter.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                showFilterDialog();
+            }
+        });
+
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -288,6 +312,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         userModel = ((UserClient) (getApplicationContext())).getUser();
         setUserDetails();
         startUserLocationsRunnable();
+        
     }
 
     @Override
@@ -309,6 +334,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
 
         if (sendLocation)
             startLocationService();
+
     }
 
 
@@ -670,23 +696,59 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
 
             for(CourtModel cortLocation: courtList)
             {
-                try
+
+                boolean advance = false;
+                switch (cortLocation.getType())
                 {
-                    String snippet = "Click here to see court details. " +"\n"
-                                    + "ID:" + cortLocation.getCourtID();
+                    case "Basketball":
+                        if(basketballFilter)
+                            advance = true;
+                        else
+                            advance = false;
+                        break;
 
-                    ClusterMarker courtClusterMarker = new ClusterMarker(
-                            new LatLng(cortLocation.getLocation().getLatitude(),cortLocation.getLocation().getLongitude()),
-                            cortLocation.getName(),
-                            snippet,
-                            cortLocation.getPicture(),
-                            cortLocation.getCourtID()
-                    );
-                    mClusterManager.addItem(courtClusterMarker);
-                   // mClusterMarkers.add(courtClusterMarker);
+                    case "Soccer":
+                        if(soccerFilter)
+                            advance = true;
+                        else
+                            advance = false;
+                        break;
 
-                }catch (NullPointerException e)
-                { }
+                    case "Tennis":
+                        if(tennisFilter)
+                            advance = true;
+                        else
+                            advance = false;
+                        break;
+
+                    case "Other":
+                        if(otherFilter)
+                            advance = true;
+                        else
+                            advance = false;
+                        break;
+                }
+
+                if(advance)
+                {
+                    try
+                    {
+                        String snippet = "Click here to see court details. " + "\n"
+                                + "ID:" + cortLocation.getCourtID();
+
+                        ClusterMarker courtClusterMarker = new ClusterMarker(
+                                new LatLng(cortLocation.getLocation().getLatitude(), cortLocation.getLocation().getLongitude()),
+                                cortLocation.getName(),
+                                snippet,
+                                cortLocation.getPicture(),
+                                cortLocation.getCourtID()
+                        );
+                        mClusterManager.addItem(courtClusterMarker);
+                        // mClusterMarkers.add(courtClusterMarker);
+
+                    } catch (NullPointerException e)
+                    { }
+                }
 
             }
             mClusterManager.cluster();
@@ -739,8 +801,15 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
             @Override
             public void onMapLoaded()
             {
-                getFriendsLocations();
-                getCourtLocations();
+//                getFriendsLocations();
+  //              getCourtLocations();
+
+                if(personFilter)
+                    getFriendsLocations();
+
+                if(courtFilter)
+                    getCourtLocations();
+
                 setUserCameraView(userModel);
             }
         });
@@ -1378,6 +1447,172 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     }
     //endregion
 
+    //////////////////////////////////// FILTER DIALOG PART //////////////////////////////////////////////
+
+    //region FILTER DIALOG
+    protected void showFilterDialog()
+    {
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(IndexActivity.this);
+        View mView = getLayoutInflater().inflate(R.layout.filter_dialog, null);
+
+        Switch switchPersonFD = mView.findViewById(R.id.switchPersonFD);
+        final Switch switchCourtFD = mView.findViewById(R.id.switchCourtFD);
+        final Switch switchBasketballFD = mView.findViewById(R.id.switchBasketballFD);
+        final Switch switchSoccerFD = mView.findViewById(R.id.switchSoccerFD);
+        final Switch switchTennisFD = mView.findViewById(R.id.switchTennisFD);
+        final Switch switchOtherFD = mView.findViewById(R.id.switchOtherFD);
+        Button btnApplyFD = mView.findViewById(R.id.btnApplyFD);
+
+        if(personFilter)
+            switchPersonFD.setChecked(true);
+        else
+            switchPersonFD.setChecked(false);
+
+        if(courtFilter)
+            switchCourtFD.setChecked(true);
+        else
+            switchCourtFD.setChecked(false);
+
+        if(basketballFilter)
+            switchBasketballFD.setChecked(true);
+        else
+            switchBasketballFD.setChecked(false);
+
+        if(soccerFilter)
+            switchSoccerFD.setChecked(true);
+        else
+            switchSoccerFD.setChecked(false);
+
+        if(tennisFilter)
+            switchTennisFD.setChecked(true);
+        else
+            switchTennisFD.setChecked(false);
+
+        if(otherFilter)
+            switchOtherFD.setChecked(true);
+        else
+            switchOtherFD.setChecked(false);
+
+        switchPersonFD.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
+                if(isChecked)
+                    personFilter = true;
+                else
+                    personFilter = false;
+            }
+        });
+
+        switchCourtFD.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
+                if(isChecked)
+                {
+                    courtFilter = true;
+                    switchBasketballFD.setClickable(true);
+                    switchBasketballFD.setChecked(true);
+                    switchSoccerFD.setClickable(true);
+                    switchSoccerFD.setChecked(true);
+                    switchTennisFD.setClickable(true);
+                    switchTennisFD.setChecked(true);
+                    switchOtherFD.setClickable(true);
+                    switchOtherFD.setChecked(true);
+                }
+                else
+                {
+                    courtFilter = false;
+                    switchBasketballFD.setClickable(false);
+                    switchBasketballFD.setChecked(false);
+                    switchSoccerFD.setClickable(false);
+                    switchSoccerFD.setChecked(false);
+                    switchTennisFD.setClickable(false);
+                    switchTennisFD.setChecked(false);
+                    switchOtherFD.setClickable(false);
+                    switchOtherFD.setChecked(false);
+                }
+            }
+        });
+
+        switchBasketballFD.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+    {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+        {
+            if(isChecked)
+                basketballFilter = true;
+            else
+                basketballFilter = false;
+        }
+    });
+
+        switchSoccerFD.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
+                if(isChecked)
+                    soccerFilter = true;
+                else
+                    soccerFilter = false;
+            }
+        });
+
+        switchTennisFD.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
+                if(isChecked)
+                    tennisFilter = true;
+                else
+                    tennisFilter = false;
+            }
+        });
+
+        switchOtherFD.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
+                if(isChecked)
+                    otherFilter = true;
+                else
+                    otherFilter = false;
+            }
+        });
+
+
+        mBuilder.setView(mView);
+        final AlertDialog dialog = mBuilder.create();
+        dialog.show();
+
+
+        btnApplyFD.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                mClusterManager.clearItems();
+                mClusterMarkers.clear();
+
+                addMyMapMarker();
+
+                if(personFilter)
+                    getFriendsLocations();
+
+                if(courtFilter)
+                    getCourtLocations();
+
+                dialog.dismiss();
+            }
+        });
+    }
+    //endregion
+
 
     //////////////////////////////////// BACK BUTTON PART //////////////////////////////////////////////
 
@@ -1467,6 +1702,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
             public void run()
             {
                 retrieveUserLocations();
+                //retrieveCourtLocations();
                 mHandler.postDelayed(mRunnable, LOCATION_UPDATE_INTERVAL);
             }
         }, LOCATION_UPDATE_INTERVAL);
@@ -1521,5 +1757,51 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         { }
 
     }
+
+
+//    private void retrieveCourtLocations()
+//    {
+//
+//        try
+//        {
+//            for(final ClusterMarker clusterMarker: mClusterMarkers)
+//            {
+//
+//                DocumentReference courtLocationRef = mDatabase.collection("courts").document(clusterMarker.getId());
+//
+//                courtLocationRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
+//                {
+//                    @Override
+//                    public void onComplete(@NonNull Task<DocumentSnapshot> task)
+//                    {
+//                        if(task.isSuccessful())
+//                        {
+//
+//                            final CourtModel updatedCourtLocation = task.getResult().toObject(CourtModel.class);
+//
+//                            for (int i = 0; i < mClusterMarkers.size(); i++)
+//                            {
+//                                try
+//                                {
+//                                    if (mClusterMarkers.get(i).getId().equals(updatedCourtLocation.getCourtID()))
+//                                    {
+//
+//                                        LatLng updatedLatLng = new LatLng(updatedCourtLocation.getLocation().getLatitude(), updatedCourtLocation.getLocation().getLongitude());
+//
+//                                        mClusterMarkers.get(i).setPosition(updatedLatLng);
+//                                        mClusterManagerRenderer.setUpdateMarker(mClusterMarkers.get(i));
+//                                    }
+//
+//                                } catch (NullPointerException e)
+//                                { }
+//                            }
+//                        }
+//                    }
+//                });
+//            }
+//        }catch (IllegalStateException e)
+//        { }
+//
+//    }
     //endregion
 }

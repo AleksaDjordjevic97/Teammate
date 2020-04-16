@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <RelativeLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <RelativeLayout
+            android:id="@+id/layoutTextFD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Filter Markers"
+                android:textSize="30dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:textColor="#000000"/>
+
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/layoutUnderlineFD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutTextFD">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/underline"/>
+
+        </RelativeLayout>
+
+
+
+        <RelativeLayout
+            android:id="@+id/layoutPersonCourtFD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutUnderlineFD"
+            android:layout_marginTop="10dp">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginLeft="10dp">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/person"
+                        android:layout_marginRight="10dp"/>
+
+
+                    <Switch
+                        android:id="@+id/switchPersonFD"
+                        android:layout_width="40dp"
+                        android:layout_height="80dp"
+                      />
+
+                </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/court"
+                    android:layout_marginRight="10dp"/>
+
+                <Switch
+                    android:id="@+id/switchCourtFD"
+                    android:layout_width="40dp"
+                    android:layout_height="80dp"
+                  />
+
+            </LinearLayout>
+
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutAdditionalTextFD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutPersonCourtFD">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Court Types"
+                android:textSize="18dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:textColor="#000000"/>
+
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/layoutUnderline2FD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutAdditionalTextFD">
+
+            <ImageView
+                android:layout_width="130dp"
+                android:layout_height="5dp"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/underline"/>
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/layoutCourtTypesFD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layoutUnderline2FD"
+            android:layout_marginTop="15dp">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginLeft="10dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/basketball"/>
+
+                        <Switch
+                            android:id="@+id/switchBasketballFD"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                         />
+
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/soccer"
+                            android:layout_marginLeft="50dp"/>
+
+                        <Switch
+                            android:id="@+id/switchSoccerFD"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                           />
+
+                    </LinearLayout>
+
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="10dp">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/tennis"/>
+
+                        <Switch
+                            android:id="@+id/switchTennisFD"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            />
+
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/other"
+                            android:layout_marginLeft="50dp"/>
+
+                        <Switch
+                            android:id="@+id/switchOtherFD"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            />
+
+                    </LinearLayout>
+
+
+
+
+                </LinearLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutCloseFD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutCourtTypesFD"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="40dp">
+
+            <Button
+                android:id="@+id/btnApplyFD"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/btn_round"
+                android:textColor="#FFFFFF"
+                android:textSize="20dp"
+                android:text="Apply filters"/>
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>
