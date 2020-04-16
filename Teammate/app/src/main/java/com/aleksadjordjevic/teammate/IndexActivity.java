@@ -4,7 +4,11 @@ package com.aleksadjordjevic.teammate;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -86,6 +90,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -151,7 +156,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     boolean tennisFilter;
     boolean otherFilter;
 
-
+    ArrayList<String> notifiedAbout;
 
 
     @Override
@@ -201,6 +206,8 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         friendsList = new ArrayList<>();
         courtList = new ArrayList<>();
         mClusterMarkers = new ArrayList<>();
+
+        notifiedAbout = new ArrayList<String>();
 
 
         navButton.setOnClickListener(new View.OnClickListener()
@@ -312,7 +319,6 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         userModel = ((UserClient) (getApplicationContext())).getUser();
         setUserDetails();
         startUserLocationsRunnable();
-        
     }
 
     @Override
@@ -744,7 +750,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
                                 cortLocation.getCourtID()
                         );
                         mClusterManager.addItem(courtClusterMarker);
-                        // mClusterMarkers.add(courtClusterMarker);
+                        mClusterMarkers.add(courtClusterMarker);
 
                     } catch (NullPointerException e)
                     { }
@@ -1702,7 +1708,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
             public void run()
             {
                 retrieveUserLocations();
-                //retrieveCourtLocations();
+                retrieveCourtLocations();
                 mHandler.postDelayed(mRunnable, LOCATION_UPDATE_INTERVAL);
             }
         }, LOCATION_UPDATE_INTERVAL);
@@ -1739,6 +1745,26 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
                                 {
                                     if (mClusterMarkers.get(i).getId().equals(updatedUserLocation.getUserID()))
                                     {
+                                        if(!updatedUserLocation.getUserID().equals(userModel.getUserID()))
+                                        {
+                                            Location userLocation = new Location("userLocation");
+                                            userLocation.setLatitude(userModel.getGeo_point().getLatitude());
+                                            userLocation.setLongitude(userModel.getGeo_point().getLongitude());
+
+                                            Location otherLocation = new Location("otherLocation");
+                                            otherLocation.setLatitude(updatedUserLocation.getGeo_point().getLatitude());
+                                            otherLocation.setLongitude(updatedUserLocation.getGeo_point().getLongitude());
+
+                                            float distance = userLocation.distanceTo(otherLocation);
+
+                                            if(!notifiedAbout.contains(updatedUserLocation.getUserID()) && distance < 100.0)
+                                            {
+                                                notifiedAbout.add(updatedUserLocation.getUserID());
+                                                sendNotification(updatedUserLocation.getUsername());
+                                            }
+                                            else if(notifiedAbout.contains(updatedUserLocation.getUserID()) && distance > 100.0)
+                                                notifiedAbout.remove(updatedUserLocation.getUserID());
+                                        }
 
                                         LatLng updatedLatLng = new LatLng(updatedUserLocation.getGeo_point().getLatitude(), updatedUserLocation.getGeo_point().getLongitude());
 
@@ -1759,49 +1785,86 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
 
-//    private void retrieveCourtLocations()
-//    {
-//
-//        try
-//        {
-//            for(final ClusterMarker clusterMarker: mClusterMarkers)
-//            {
-//
-//                DocumentReference courtLocationRef = mDatabase.collection("courts").document(clusterMarker.getId());
-//
-//                courtLocationRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
-//                {
-//                    @Override
-//                    public void onComplete(@NonNull Task<DocumentSnapshot> task)
-//                    {
-//                        if(task.isSuccessful())
-//                        {
-//
-//                            final CourtModel updatedCourtLocation = task.getResult().toObject(CourtModel.class);
-//
-//                            for (int i = 0; i < mClusterMarkers.size(); i++)
-//                            {
-//                                try
-//                                {
-//                                    if (mClusterMarkers.get(i).getId().equals(updatedCourtLocation.getCourtID()))
-//                                    {
-//
-//                                        LatLng updatedLatLng = new LatLng(updatedCourtLocation.getLocation().getLatitude(), updatedCourtLocation.getLocation().getLongitude());
-//
-//                                        mClusterMarkers.get(i).setPosition(updatedLatLng);
-//                                        mClusterManagerRenderer.setUpdateMarker(mClusterMarkers.get(i));
-//                                    }
-//
-//                                } catch (NullPointerException e)
-//                                { }
-//                            }
-//                        }
-//                    }
-//                });
-//            }
-//        }catch (IllegalStateException e)
-//        { }
-//
-//    }
+    private void retrieveCourtLocations()
+    {
+
+        try
+        {
+            for(final ClusterMarker clusterMarker: mClusterMarkers)
+            {
+
+                DocumentReference courtLocationRef = mDatabase.collection("courts").document(clusterMarker.getId());
+
+                courtLocationRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
+                {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task)
+                    {
+                        if(task.isSuccessful())
+                        {
+
+                            final CourtModel updatedCourtLocation = task.getResult().toObject(CourtModel.class);
+
+                            for (int i = 0; i < mClusterMarkers.size(); i++)
+                            {
+                                try
+                                {
+                                    if (mClusterMarkers.get(i).getId().equals(updatedCourtLocation.getCourtID()))
+                                    {
+
+                                        Location userLocation = new Location("userLocation");
+                                        userLocation.setLatitude(userModel.getGeo_point().getLatitude());
+                                        userLocation.setLongitude(userModel.getGeo_point().getLongitude());
+
+                                        Location otherLocation = new Location("otherLocation");
+                                        otherLocation.setLatitude(updatedCourtLocation.getLocation().getLatitude());
+                                        otherLocation.setLongitude(updatedCourtLocation.getLocation().getLongitude());
+
+                                        float distance = userLocation.distanceTo(otherLocation);
+
+
+                                        if(!notifiedAbout.contains(updatedCourtLocation.getCourtID()) && distance < 100.0)
+                                        {
+                                            notifiedAbout.add(updatedCourtLocation.getCourtID());
+                                            sendNotification(updatedCourtLocation.getName());
+                                        }
+                                        else if(notifiedAbout.contains(updatedCourtLocation.getCourtID()) && distance > 100.0)
+                                            notifiedAbout.remove(updatedCourtLocation.getCourtID());
+
+                                    }
+
+                                } catch (NullPointerException e)
+                                { }
+                            }
+                        }
+                    }
+                });
+            }
+        }catch (IllegalStateException e)
+        { }
+
+    }
+    //endregion
+
+    //////////////////////////////////// NOTIFICATION PART //////////////////////////////////////////////
+
+
+    //region NOTIFICATION
+    protected void sendNotification(String name)
+    {
+        Notification.Builder builder = new Notification.Builder(this)
+                                        .setSmallIcon(R.mipmap.launcher_icon)
+                                        .setContentTitle(name)
+                                        .setContentText("Is near you.");
+        NotificationManager manager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+        Intent intent = new Intent(this,IndexActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_IMMUTABLE);
+        builder.setContentIntent(contentIntent);
+        Notification notification = builder.build();
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+        notification.defaults |= Notification.DEFAULT_SOUND;
+
+        manager.notify(new Random().nextInt(),notification);
+    }
     //endregion
 }
