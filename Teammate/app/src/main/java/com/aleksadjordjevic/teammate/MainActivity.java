@@ -59,31 +59,11 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         if (checkMapServices())
         {
+            getLocationPermission();
 
-            countDownTimer = new CountDownTimer(3500,1000)
-            {
-                @Override
-                public void onTick(long millisUntilFinished)
-                {
+            if(mLocationPermissionGranted)
+                startTimer();
 
-                }
-
-                @Override
-                public void onFinish()
-                {
-                    countDownTimer.cancel();
-
-
-                    if (mAuth.getCurrentUser() != null)
-                        setUser();
-                    else
-                    {
-                        Intent nextActivity = new Intent(getApplicationContext(), Main2Activity.class);
-                        startActivity(nextActivity);
-                    }
-
-                }
-            }.start();
 
         }
     }
@@ -190,7 +170,10 @@ public class MainActivity extends AppCompatActivity
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION:
             {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
                     mLocationPermissionGranted = true;
+                    startTimer();
+                }
 
             }
         }
@@ -208,6 +191,35 @@ public class MainActivity extends AppCompatActivity
                     getLocationPermission();
             }
         }
+
+    }
+
+    protected void startTimer()
+    {
+        countDownTimer = new CountDownTimer(2500, 1000)
+        {
+            @Override
+            public void onTick(long millisUntilFinished)
+            {
+
+            }
+
+            @Override
+            public void onFinish()
+            {
+                countDownTimer.cancel();
+
+
+                if (mAuth.getCurrentUser() != null)
+                    setUser();
+                else
+                {
+                    Intent nextActivity = new Intent(getApplicationContext(), Main2Activity.class);
+                    startActivity(nextActivity);
+                }
+
+            }
+        }.start();
 
     }
 

@@ -52,7 +52,7 @@
                     android:layout_marginBottom="20dp"
                     android:layout_marginLeft="20dp"
                     android:src="@drawable/find_friends"
-                    android:background="@color/fui_transparent"/>
+                    android:background="@drawable/btn_round"/>
 
                 <TextView
                     android:id="@+id/txtStatusAF"
