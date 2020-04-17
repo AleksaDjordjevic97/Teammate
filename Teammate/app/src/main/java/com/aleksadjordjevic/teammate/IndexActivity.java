@@ -2,7 +2,6 @@ package com.aleksadjordjevic.teammate;
 
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -13,12 +12,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -36,12 +33,10 @@ import android.widget.RatingBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.aleksadjordjevic.teammate.services.LocationService;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.common.internal.Constants;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -51,7 +46,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -75,7 +69,6 @@ import com.google.firebase.storage.UploadTask;
 import com.google.maps.android.clustering.ClusterManager;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
@@ -84,15 +77,11 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.lang.ref.Reference;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class IndexActivity extends AppCompatActivity implements OnMapReadyCallback
@@ -157,7 +146,6 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     boolean otherFilter;
 
     ArrayList<String> notifiedAbout;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -346,8 +334,6 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
 
      //////////////////////////////////// NAVIGATION DRAWER PART //////////////////////////////////////////////
 
-
-
     //region NAVIGATION DRAWER
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
@@ -388,9 +374,9 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     }
     //endregion
 
-    //////////////////////////////////// ADD COURT DIALOG //////////////////////////////////////////////
+    //////////////////////////////////// ADD COURT DIALOG PART //////////////////////////////////////////////
 
-    //region ADD COURT
+    //region ADD COURT DIALOG
     protected void addCourt()
     {
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(IndexActivity.this);
@@ -767,7 +753,6 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
 
     //region MAP
 
-
     protected void setUserCameraView(UserModel model)
     {
 
@@ -776,10 +761,9 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         double topBoundary = model.getGeo_point().getLatitude() + .1;
         double rightBoundary = model.getGeo_point().getLongitude() + .1;
 
-
         mMapBoundary = new LatLngBounds(new LatLng(bottomBoundary, leftBoundary),
                 new LatLng(topBoundary, rightBoundary));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mMapBoundary, 0));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(mMapBoundary, 0));
     }
 
     protected void setCourtCameraView(CourtModel model)
@@ -790,10 +774,9 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         double topBoundary = model.getLocation().getLatitude() + .1;
         double rightBoundary = model.getLocation().getLongitude() + .1;
 
-
         mMapBoundary = new LatLngBounds(new LatLng(bottomBoundary, leftBoundary),
                 new LatLng(topBoundary, rightBoundary));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mMapBoundary, 0));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(mMapBoundary, 0));
     }
 
     @Override
@@ -807,9 +790,6 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
             @Override
             public void onMapLoaded()
             {
-//                getFriendsLocations();
-  //              getCourtLocations();
-
                 if(personFilter)
                     getFriendsLocations();
 
@@ -843,6 +823,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     //////////////////////////////////// SHOW USER DIALOG PART //////////////////////////////////////////////
 
     //region SHOW USER DIALOG
+
     protected void showUserDialog(Marker marker)
     {
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(IndexActivity.this);
@@ -1644,7 +1625,6 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     }
     //endregion
 
-
     //////////////////////////////////// BACK BUTTON PART //////////////////////////////////////////////
 
     //region BACK BUTTON
@@ -1722,8 +1702,6 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         }
         return false;
     }
-
-
 
     private void startUserLocationsRunnable()
     {
@@ -1872,7 +1850,6 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     //endregion
 
     //////////////////////////////////// NOTIFICATION PART //////////////////////////////////////////////
-
 
     //region NOTIFICATION
     protected void sendNotification(String name)

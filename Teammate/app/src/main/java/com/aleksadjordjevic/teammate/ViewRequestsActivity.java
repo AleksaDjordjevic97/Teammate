@@ -1,6 +1,5 @@
 package com.aleksadjordjevic.teammate;
 
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.bluetooth.BluetoothAdapter;
@@ -17,7 +16,6 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -28,12 +26,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +36,6 @@ import java.util.UUID;
 
 public class ViewRequestsActivity extends AppCompatActivity
 {
-    //static final int REQUEST_ENABLE_BT = 0;
     static final int STATE_LISTENING = 1;
     static final int STATE_CONNECTING = 2;
     static final int STATE_CONNECTED = 3;
@@ -92,7 +86,6 @@ public class ViewRequestsActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                //turnOnBluetooth();
                 if(!mBlueAdapter.isDiscovering())
                 {
                     Intent discoverableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
@@ -120,7 +113,6 @@ public class ViewRequestsActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                //final String otherID = txtUser.getText().toString();
                 Map<String,Object> userMap = new HashMap<>();
                 userMap.put("friends", Arrays.asList(otherID));
                 final Map<String,Object> otherMap = new HashMap<>();
@@ -164,45 +156,7 @@ public class ViewRequestsActivity extends AppCompatActivity
 
     }
 
-//    protected void turnOnBluetooth()
-//    {
-//        if(mBlueAdapter == null)
-//        {
-//            Toast.makeText(getApplicationContext(), "Bluetooth is unavailable. Try again later.", Toast.LENGTH_SHORT).show();
-//        }
-//        else
-//        {
-//            if(!mBlueAdapter.isEnabled())
-//            {
-//                Intent turnOnBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-//                startActivityForResult(turnOnBT,REQUEST_ENABLE_BT);
-//                if(!mBlueAdapter.isDiscovering())
-//                {
-//                    Intent discoverableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-//                    startActivity(discoverableBT);
-//                }
-//
-//            }
-//        }
-//    }
-//
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
-//    {
-//        switch (requestCode)
-//        {
-//            case REQUEST_ENABLE_BT:
-//                if(resultCode == RESULT_OK)
-//                {
-//                    Toast.makeText(getApplicationContext(), "Bluetooth is now turned on", Toast.LENGTH_SHORT).show();
-//                }
-//                else
-//                    Toast.makeText(getApplicationContext(), "Error turning Bluetooth on. Try again later.", Toast.LENGTH_SHORT).show();
-//                break;
-//
-//        }
-//        super.onActivityResult(requestCode, resultCode, data);
-//    }
+
 
     protected void changeRequest(boolean visibility)
     {

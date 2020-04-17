@@ -9,7 +9,6 @@ import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
@@ -25,7 +24,6 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -42,7 +40,6 @@ import java.util.UUID;
 public class AddFriendsActivity extends AppCompatActivity
 {
 
-    //static final int REQUEST_ENABLE_BT = 0;
     static final int STATE_LISTENING = 1;
     static final int STATE_CONNECTING = 2;
     static final int STATE_CONNECTED = 3;
@@ -199,81 +196,6 @@ public class AddFriendsActivity extends AppCompatActivity
         }
     });
 
-
-
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
-//        setBluetooth();
-    }
-
-//    protected void setBluetooth()
-//    {
-//        if(mBlueAdapter == null)
-//            Toast.makeText(getApplicationContext(), "Bluetooth is unavailable. Try again later.", Toast.LENGTH_SHORT).show();
-//        else
-//        {
-//            if(mBlueAdapter.isEnabled())
-//                btnBluetooth.setImageResource(R.drawable.bluetooth_on);
-//            else
-//                btnBluetooth.setImageResource(R.drawable.bluetooth_off);
-//        }
-//
-//    }
-
-//    protected void changeBluetooth()
-//    {
-//        if(mBlueAdapter == null)
-//        {
-//            if(!mBTDevices.isEmpty())
-//                mBTDevices.clear();
-//            Toast.makeText(getApplicationContext(), "Bluetooth is unavailable. Try again later.", Toast.LENGTH_SHORT).show();
-//        }
-//        else
-//        {
-//            if(mBlueAdapter.isEnabled())
-//            {
-//                mBlueAdapter.disable();
-//                btnBluetooth.setImageResource(R.drawable.bluetooth_off);
-//                if(!mBTDevices.isEmpty())
-//                    mBTDevices.clear();
-//                listBTDevices.setAdapter(null);
-//                Toast.makeText(getApplicationContext(), "Bluetooth is now turned off", Toast.LENGTH_SHORT).show();
-//
-//            }
-//            else
-//            {
-//                Intent turnOnBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-//                startActivityForResult(turnOnBT,REQUEST_ENABLE_BT);
-//                if(!mBlueAdapter.isDiscovering())
-//                {
-//                    Intent discoverableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-//                    startActivity(discoverableBT);
-//                }
-//
-//            }
-//        }
-//    }
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
-//    {
-//        switch (requestCode)
-//        {
-//            case REQUEST_ENABLE_BT:
-//                if(resultCode == RESULT_OK)
-//                {
-//                    btnBluetooth.setImageResource(R.drawable.bluetooth_on);
-//                    Toast.makeText(getApplicationContext(), "Bluetooth is now turned on", Toast.LENGTH_SHORT).show();
-//                }
-//                else
-//                    Toast.makeText(getApplicationContext(), "Error turning Bluetooth on. Try again later.", Toast.LENGTH_SHORT).show();
-//                break;
-//
-//        }
-//        super.onActivityResult(requestCode, resultCode, data);
-//    }
 
     protected void findDevices()
     {

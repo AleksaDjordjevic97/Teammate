@@ -1,7 +1,6 @@
 package com.aleksadjordjevic.teammate;
 
 import com.google.firebase.firestore.GeoPoint;
-
 import java.util.HashMap;
 
 public class CourtModel

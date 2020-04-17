@@ -2,10 +2,8 @@ package com.aleksadjordjevic.teammate;
 
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ServerTimestamp;
-
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class UserModel
 {
@@ -20,8 +18,6 @@ public class UserModel
     private GeoPoint geo_point;
     private @ServerTimestamp Date timestamp;
     private boolean locationSharing;
-    private String g;
-    private GeoPoint l;
 
     public UserModel()
     {
@@ -39,7 +35,7 @@ public class UserModel
         this.friends = new ArrayList<>();
     }
 
-    public UserModel(String username, String profile_image, long numOfPosts, String phone, String email, GeoPoint geo_point, Date timestamp, boolean locationSharing,String g, GeoPoint l)
+    public UserModel(String username, String profile_image, long numOfPosts, String phone, String email, GeoPoint geo_point, Date timestamp, boolean locationSharing)
     {
         this.userID = userID;
         this.username = username;
@@ -51,8 +47,6 @@ public class UserModel
         this.geo_point = geo_point;
         this.timestamp = timestamp;
         this.locationSharing = locationSharing;
-        this.g = g;
-        this.l = l;
     }
 
     public String getUserID()
@@ -153,25 +147,5 @@ public class UserModel
     public void setLocationSharing(boolean locationSharing)
     {
         this.locationSharing = locationSharing;
-    }
-
-    public String getG()
-    {
-        return g;
-    }
-
-    public void setG(String g)
-    {
-        this.g = g;
-    }
-
-    public GeoPoint getL()
-    {
-        return l;
-    }
-
-    public void setL(GeoPoint l)
-    {
-        this.l = l;
     }
 }

@@ -17,7 +17,6 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RangActivity extends AppCompatActivity
