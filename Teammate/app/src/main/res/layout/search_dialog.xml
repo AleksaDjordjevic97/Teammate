@@ -264,14 +264,27 @@
                         android:layout_marginTop="10dp"
                         android:background="@drawable/edit_text"
                         android:inputType="number"
-                        android:singleLine="false" />
+                        android:hint="m"
+                        android:textAlignment="textEnd"
+                        android:paddingRight="10dp"
+                        android:singleLine="true" />
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/meter"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginTop="15dp"/>
+<!--                    <ImageView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:src="@drawable/meter"-->
+<!--                        android:layout_marginLeft="10dp"-->
+<!--                        android:layout_marginTop="15dp"/>-->
+
+                    <ImageButton
+                        android:id="@+id/btnSearchDistanceSD"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/search_red"
+                        android:background="@color/fui_transparent"
+                        android:layout_marginLeft="10dp"/>
+
+
 
 
                 </LinearLayout>

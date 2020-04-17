@@ -1147,6 +1147,7 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
 
         final EditText txtSearchSD = mView.findViewById(R.id.txtSearchSD);
         ImageButton btnSearchSD = mView.findViewById(R.id.btnSearchSD);
+        ImageButton btnSearchDistance = mView.findViewById(R.id.btnSearchDistanceSD);
         final RadioButton radioPersonSD = mView.findViewById(R.id.radioPersonSD);
         final RadioButton radioCourtSD = mView.findViewById(R.id.radioCourtSD);
         final CheckBox checkBasketballSD = mView.findViewById(R.id.checkBasketballSD);
@@ -1202,24 +1203,10 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
             public void onClick(View v)
             {
 
-                int radius;
-                boolean searchRadius;
 
                 if(radioPersonSD.isChecked())
                 {
-
-                    if(txtRadiusSD.getText().toString().trim().equals(""))
-                    {
-                        searchRadius = false;
-                        searchUsers(searchRadius,0,txtSearchSD.getText().toString().trim(), dialog);
-                    }
-                    else
-                    {
-                        searchRadius = true;
-                        radius = Integer.parseInt(txtRadiusSD.getText().toString().trim());
-                        searchUsers(searchRadius,radius,txtSearchSD.getText().toString().trim(), dialog);
-                    }
-
+                    searchUsers(false,0,txtSearchSD.getText().toString().trim(), dialog);
                 }
                 else if(radioCourtSD.isChecked())
                 {
@@ -1243,16 +1230,61 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
                     else
                         searchTypes = true;
 
-                    if(txtRadiusSD.getText().toString().trim().equals(""))
+                    searchCourts(searchTypes,types,false,0,txtSearchSD.getText().toString().trim(),dialog);
+
+                }
+            }
+        });
+
+        btnSearchDistance.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                int radius;
+
+                if (radioPersonSD.isChecked())
+                {
+
+                    if (txtRadiusSD.getText().toString().trim().equals(""))
                     {
-                        searchRadius = false;
-                        searchCourts(searchTypes,types,searchRadius,0,txtSearchSD.getText().toString().trim(),dialog);
+                        searchUsers(false, 0, "", dialog);
                     }
                     else
                     {
-                        searchRadius = true;
                         radius = Integer.parseInt(txtRadiusSD.getText().toString().trim());
-                        searchCourts(searchTypes,types,searchRadius,radius,txtSearchSD.getText().toString().trim(),dialog);
+                        searchUsers(true, radius, "", dialog);
+                    }
+
+                } else if (radioCourtSD.isChecked())
+                {
+                    ArrayList<String> types = new ArrayList<>();
+                    boolean searchTypes;
+
+                    if (checkBasketballSD.isChecked())
+                        types.add("Basketball");
+
+                    if (checkSoccerSD.isChecked())
+                        types.add("Soccer");
+
+                    if (checkTennisSD.isChecked())
+                        types.add("Tennis");
+
+                    if (checkOtherSD.isChecked())
+                        types.add("Other");
+
+                    if (types.isEmpty())
+                        searchTypes = false;
+                    else
+                        searchTypes = true;
+
+                    if (txtRadiusSD.getText().toString().trim().equals(""))
+                    {
+                        searchCourts(searchTypes, types, false, 0,"", dialog);
+                    } else
+                    {
+                        radius = Integer.parseInt(txtRadiusSD.getText().toString().trim());
+                        searchCourts(searchTypes, types, true, radius,"", dialog);
                     }
 
                 }
@@ -1275,12 +1307,14 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
     protected void searchUsers(boolean searchRadius, int radius, String name, final AlertDialog dialog)
     {
         Query showUserSearch;
-       // GeoPoint inRadius = new GeoPoint(userModel.getGeo_point().getLatitude(),userModel.getGeo_point().getLongitude());
+        GeoPoint northEast = getNewGeoPoint(userModel.getGeo_point(),radius,radius);
+        GeoPoint southWest = getNewGeoPoint(userModel.getGeo_point(),-radius,-radius);
 
         if(searchRadius)
         {
-            showUserSearch = mDatabase.collection("users").orderBy("username")                      //napravi za distancu
-                    .startAt(name).endAt(name + "\uf8ff");
+            showUserSearch = mDatabase.collection("users").orderBy("geo_point")
+                    .whereLessThanOrEqualTo("geo_point",northEast)
+                    .whereGreaterThanOrEqualTo("geo_point",southWest);
         }
         else
         {
@@ -1344,43 +1378,34 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
-//    protected float calculateDistance(GeoPoint gp)
-//    {
-//        Location userLocation = new Location("userLocation");
-//        userLocation.setLatitude(userModel.getGeo_point().getLatitude());
-//        userLocation.setLongitude(userModel.getGeo_point().getLongitude());
-//
-//        Location otherLocation = new Location("otherLocation");
-//        otherLocation.setLatitude(gp.getLatitude());
-//        otherLocation.setLongitude(gp.getLongitude());
-//
-//        float distance = userLocation.distanceTo(otherLocation);
-//
-//        return distance;
-//    }
-//
-//    private static GeoPoint getNewGeoPoint(GeoPoint sourcePosition, double mEastWest, double mNorthSouth)
-//    {
-//        double degreesPerMeterForLat = EarthCircumFence/360.0;
-//        double shrinkFactor = Math.cos((sourcePosition.getLatitude()*Math.PI/180));
-//        double degreesPerMeterForLon = degreesPerMeterForLat * shrinkFactor;
-//        double newLat = sourcePosition.getLatitude() + mNorthSouth * (1/degreesPerMeterForLat);
-//        double newLng = sourcePosition.getLongitude() + mEastWest * (1/degreesPerMeterForLon);
-//        return new GeoPoint(newLat, newLng);
-//    }
+    private static GeoPoint getNewGeoPoint(GeoPoint sourcePosition, double mEastWest, double mNorthSouth)
+    {
+        double degreesPerMeterForLat = EarthCircumFence/360.0;
+        double shrinkFactor = Math.cos((sourcePosition.getLatitude()*Math.PI/180));
+        double degreesPerMeterForLon = degreesPerMeterForLat * shrinkFactor;
+        double newLat = sourcePosition.getLatitude() + mNorthSouth * (1/degreesPerMeterForLat);
+        double newLng = sourcePosition.getLongitude() + mEastWest * (1/degreesPerMeterForLon);
+        return new GeoPoint(newLat, newLng);
+    }
 
     protected void searchCourts(boolean searchTypes, ArrayList<String> types, boolean searchRadius, int radius, String name, final AlertDialog dialog)
     {
         Query showCourtSearch;
+        GeoPoint northEast = getNewGeoPoint(userModel.getGeo_point(),radius,radius);
+        GeoPoint southWest = getNewGeoPoint(userModel.getGeo_point(),-radius,-radius);
 
         if(searchRadius)
         {
-            if(searchTypes)                                                                                 //napravi za distancu
-                showCourtSearch = mDatabase.collection("courts").orderBy("name")
-                        .startAt(name).endAt(name + "\uf8ff").whereIn("type",types);
+
+            if(searchTypes)
+                showCourtSearch = mDatabase.collection("courts").orderBy("location")
+                        .whereLessThanOrEqualTo("location",northEast)
+                        .whereGreaterThanOrEqualTo("location",southWest)
+                        .whereIn("type",types);
             else
-                showCourtSearch = mDatabase.collection("courts").orderBy("name")
-                        .startAt(name).endAt(name + "\uf8ff");
+                showCourtSearch = mDatabase.collection("courts").orderBy("location")
+                        .whereLessThanOrEqualTo("location",northEast)
+                        .whereGreaterThanOrEqualTo("location",southWest);
 
         }
         else
