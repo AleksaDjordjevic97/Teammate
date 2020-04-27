@@ -29,19 +29,17 @@
         android:roundIcon="@mipmap/launcher_icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ViewRequestsActivity"></activity>
-        <activity android:name=".FriendMenuActivity" />
-        <activity android:name=".AddFriendsActivity" />
-        <activity android:name=".FriendsActivity" />
-        <activity android:name=".ProfileActivity" />
-        <!--
-             The API key for Google Maps-based APIs is defined as a string resource.
-             (See the file "res/values/google_maps_api.xml").
-             Note that the API key is linked to the encryption key used to sign the APK.
-             You need a different API key for each encryption key, including the release key that is used to
-             sign the APK for publishing.
-             You can define the keys for the debug and release targets in src/debug/ and src/release/.
-        -->
+        <activity android:name=".ViewRequestsActivity"
+                  android:screenOrientation="portrait"/>
+        <activity android:name=".FriendMenuActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".AddFriendsActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".FriendsActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ProfileActivity"
+            android:screenOrientation="portrait"/>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
@@ -55,20 +53,29 @@
 
         </service>
 
-        <activity android:name=".RangActivity" />
+        <activity android:name=".RangActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".IndexActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ResetPasswordActivity" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ResetPasswordActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Base.Theme.AppCompat" />
-        <activity android:name=".Register2Activity" />
-        <activity android:name=".RegisterActivity" />
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".Main2Activity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".Register2Activity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".RegisterActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".LoginActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Main2Activity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -50,6 +51,8 @@ public class MainActivity extends AppCompatActivity
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         mAuth = FirebaseAuth.getInstance();
+        //mAuth.signOut();
+
 
     }
 
@@ -62,8 +65,7 @@ public class MainActivity extends AppCompatActivity
             getLocationPermission();
 
             if(mLocationPermissionGranted)
-                startTimer();
-
+                nextActivity();
 
         }
     }
@@ -89,6 +91,8 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+
+
     }
 
     private boolean checkMapServices()
@@ -172,7 +176,7 @@ public class MainActivity extends AppCompatActivity
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 {
                     mLocationPermissionGranted = true;
-                    startTimer();
+                    nextActivity();
                 }
 
             }
@@ -194,32 +198,15 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    protected void startTimer()
+    protected void nextActivity()
     {
-        countDownTimer = new CountDownTimer(2500, 1000)
+        if (mAuth.getCurrentUser() != null)
+            setUser();
+        else
         {
-            @Override
-            public void onTick(long millisUntilFinished)
-            {
-
-            }
-
-            @Override
-            public void onFinish()
-            {
-                countDownTimer.cancel();
-
-
-                if (mAuth.getCurrentUser() != null)
-                    setUser();
-                else
-                {
-                    Intent nextActivity = new Intent(getApplicationContext(), Main2Activity.class);
-                    startActivity(nextActivity);
-                }
-
-            }
-        }.start();
+            Intent nextActivity = new Intent(getApplicationContext(), Main2Activity.class);
+            startActivity(nextActivity);
+        }
 
     }
 
