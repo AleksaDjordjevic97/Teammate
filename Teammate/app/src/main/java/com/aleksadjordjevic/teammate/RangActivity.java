@@ -1,6 +1,7 @@
 package com.aleksadjordjevic.teammate;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,8 +16,12 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RangActivity extends AppCompatActivity
@@ -55,6 +60,8 @@ public class RangActivity extends AppCompatActivity
                 startActivity(indexIntent);
             }
         });
+
+
     }
 
     @Override

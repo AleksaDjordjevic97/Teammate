@@ -944,13 +944,18 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
 
                 final ArrayList<String> userReviews = new ArrayList<>();
 
-                if(!court.getReviews().isEmpty())
+                try
                 {
-                    for (String ur : court.getReviews().keySet())
-                        userReviews.add(ur);
+                    if (!court.getReviews().isEmpty())
+                    {
+                        for (String ur : court.getReviews().keySet())
+                            userReviews.add(ur);
 
-                    showReviews(userReviews, court.getReviews(), court.getUserRatings());
+                        showReviews(userReviews, court.getReviews(), court.getUserRatings());
+                    }
                 }
+                catch (Exception e)
+                {}
 
                 btnReviewMC.setOnClickListener(new View.OnClickListener()
                 {
@@ -975,24 +980,33 @@ public class IndexActivity extends AppCompatActivity implements OnMapReadyCallba
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task)
                                     {
-                                        if(!court.getReviews().containsKey(userModel.getUserID()))
+                                        if(court.getReviews() != null)
                                         {
-                                            HashMap<String, Object> reviewUpdateMap = new HashMap<>();
-                                            reviewUpdateMap.put("numOfPosts", userModel.getNumOfPosts() + 1);
-                                            profileRef.set(reviewUpdateMap, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>()
+                                            if (!court.getReviews().containsKey(userModel.getUserID()))
                                             {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task)
+                                                HashMap<String, Object> reviewUpdateMap = new HashMap<>();
+                                                reviewUpdateMap.put("numOfPosts", userModel.getNumOfPosts() + 1);
+                                                profileRef.set(reviewUpdateMap, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>()
                                                 {
-                                                    if (task.isSuccessful())
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task)
                                                     {
-                                                        userModel.setNumOfPosts(userModel.getNumOfPosts() + 1);
-                                                        Toast.makeText(IndexActivity.this, "Review added successfully.", Toast.LENGTH_SHORT).show();
-                                                        showCourtDialog(marker);
-                                                        dialog.dismiss();
+                                                        if (task.isSuccessful())
+                                                        {
+                                                            userModel.setNumOfPosts(userModel.getNumOfPosts() + 1);
+                                                            Toast.makeText(IndexActivity.this, "Review added successfully.", Toast.LENGTH_SHORT).show();
+                                                            showCourtDialog(marker);
+                                                            dialog.dismiss();
+                                                        }
                                                     }
-                                                }
-                                            });
+                                                });
+                                            }
+                                            else
+                                            {
+                                                Toast.makeText(IndexActivity.this, "Review added successfully.", Toast.LENGTH_SHORT).show();
+                                                showCourtDialog(marker);
+                                                dialog.dismiss();
+                                            }
                                         }
                                         else
                                         {
